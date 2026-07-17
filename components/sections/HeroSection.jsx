@@ -102,20 +102,21 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
             transition={{ duration: 1.8, delay: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <div className="w-full h-full" style={{
-              background: "linear-gradient(90deg, transparent, var(--c-gold), transparent)",
-              opacity: 0.5,
+              background: "linear-gradient(90deg, transparent, #C4827A, transparent)",
+              opacity: 0.4,
             }} />
           </motion.div>
 
-          {/* Names — main title */}
+          {/* Names — main title, elegant romantic serif */}
           <motion.h1
             className="text-2xl sm:text-5xl md:text-7xl lg:text-8xl leading-tight mb-3 sm:mb-6"
             style={{
-              fontFamily: "var(--font-cn)",
-              fontWeight: 400,
-              color: "var(--c-warm)",
-              letterSpacing: "0.12em",
-              textShadow: "0 2px 20px rgba(255,240,220,0.5)",
+              fontFamily: "'Playfair Display', 'Noto Serif SC', serif",
+              fontWeight: 500,
+              color: "#C4827A",
+              letterSpacing: "0.15em",
+              textShadow: "0 2px 30px rgba(196,130,122,0.3), 0 0 60px rgba(255,220,200,0.15)",
+              marginTop: "-12vh",
             }}
             initial={{ opacity: 0, filter: "blur(12px)", letterSpacing: "0.4em" }}
             animate={{ opacity: 1, filter: "blur(0px)", letterSpacing: "0.12em" }}
@@ -124,7 +125,7 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
             杜明洋{" "}
             <motion.span
               className="inline-block mx-1.5 sm:mx-4"
-              style={{ color: "var(--c-rose)", fontWeight: 300 }}
+              style={{ color: "#D4A0A0", fontWeight: 300 }}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 2.2, type: "spring", stiffness: 100 }}
@@ -134,16 +135,17 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
             {" "}陈柯嘉
           </motion.h1>
 
-          {/* Tagline */}
+          {/* Tagline — romantic italic */}
           <motion.p
             className="text-xs sm:text-base md:text-lg mb-10 sm:mb-16"
             style={{
               fontFamily: "'Playfair Display', 'Georgia', serif",
               fontStyle: "italic",
               fontWeight: 400,
-              color: "var(--c-warm-muted)",
-              letterSpacing: "0.1em",
-              textShadow: "0 1px 10px rgba(255,240,220,0.4)",
+              color: "#B8897E",
+              letterSpacing: "0.15em",
+              textShadow: "0 1px 15px rgba(184,137,126,0.25)",
+              marginTop: "6vh",
             }}
             initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -152,33 +154,35 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
             Some stories are not meant to end.
           </motion.p>
 
-          {/* CTA button */}
+          {/* CTA button — romantic elegant */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 3.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+            style={{ marginTop: "4vh" }}
           >
             <motion.button
               onClick={() => scrollTo("timer")}
               className="group relative px-7 sm:px-12 py-3 sm:py-4 cursor-pointer"
               style={{
-                border: "1px solid rgba(201, 169, 110, 0.3)",
-                background: "rgba(255,255,255,0.5)",
+                border: "1px solid rgba(196, 130, 122, 0.35)",
+                background: "rgba(255,255,255,0.45)",
                 backdropFilter: "blur(10px)",
               }}
               whileHover={{
-                borderColor: "rgba(201, 169, 110, 0.5)",
-                background: "rgba(255,255,255,0.7)",
+                borderColor: "rgba(196, 130, 122, 0.55)",
+                background: "rgba(255,255,255,0.65)",
                 scale: 1.02,
               }}
               whileTap={{ scale: 0.97 }}
             >
               <span
-                className="text-[11px] sm:text-sm tracking-[0.25em]"
+                className="text-[11px] sm:text-sm tracking-[0.3em]"
                 style={{
-                  fontFamily: "var(--font-cn)",
-                  fontWeight: 300,
-                  color: "var(--c-warm-dim)",
+                  fontFamily: "'Playfair Display', 'Noto Serif SC', serif",
+                  fontWeight: 400,
+                  fontStyle: "italic",
+                  color: "#B8897E",
                 }}
               >
                 进入我们的故事
@@ -195,8 +199,8 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
             transition={{ duration: 1.8, delay: 4.0, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
             <div className="w-full h-full" style={{
-              background: "linear-gradient(90deg, transparent, var(--c-gold), transparent)",
-              opacity: 0.5,
+              background: "linear-gradient(90deg, transparent, #C4827A, transparent)",
+              opacity: 0.4,
             }} />
           </motion.div>
 
