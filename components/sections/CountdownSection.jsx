@@ -1,81 +1,116 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Clock } from "lucide-react";
-import { FlipCard, AmbientOrbs } from "@/components/ui";
 
-export default function CountdownSection({ dark, startDate, time }) {
+export default function CountdownSection({ startDate, time }) {
   return (
-    <section id="timer" className="relative py-28 md:py-40 px-6 overflow-hidden" style={{ background: dark ? "var(--c-dark-bg)" : "var(--c-cream)" }}>
-      <AmbientOrbs dark={dark} count={3} />
-
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={{
-            hidden: { opacity: 0, y: 50, filter: "blur(8px)" },
-            visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] } },
+    <section id="timer" className="relative min-h-screen flex items-center justify-center py-28 md:py-40 px-6">
+      <div className="max-w-4xl mx-auto text-center">
+        {/* Date */}
+        <motion.p
+          className="text-[11px] tracking-[0.4em] uppercase mb-16 md:mb-24"
+          style={{
+            fontFamily: "var(--font-sans)",
+            color: "var(--c-warm-muted)",
+            fontWeight: 400,
           }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2, delay: 0.2 }}
         >
-          {/* icon */}
-          <motion.div
-            className="mb-6"
-            initial={{ opacity: 0, scale: 0.3, rotate: -90 }}
-            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-            viewport={{ once: true }}
-            transition={{ type: "spring", stiffness: 180, delay: 0.1 }}
-          >
-            <Clock className="w-5 h-5 mx-auto" style={{ color: "var(--c-gold)", filter: "drop-shadow(0 0 6px rgba(201,169,110,0.3))" }} />
-          </motion.div>
+          Since {startDate.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })}
+        </motion.p>
 
-          {/* date label */}
-          <p className="text-xs tracking-[0.35em] uppercase mb-4" style={{
-            fontFamily: "'Inter', sans-serif",
-            color: dark ? "#8B7878" : "var(--c-text-muted)",
-            fontWeight: 500,
+        {/* Main count */}
+        <motion.div
+          initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+        >
+          <p className="text-xs tracking-[0.3em] uppercase mb-6" style={{
+            fontFamily: "var(--font-sans)",
+            color: "var(--c-gold-dim)",
+            fontWeight: 400,
           }}>
-            Since {startDate.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })}
+            Days
           </p>
-
-          {/* main count */}
-          <p className="text-2xl md:text-3xl mb-16" style={{
+          <p
+            className="text-7xl sm:text-8xl md:text-[10rem] lg:text-[13rem] leading-none mb-6"
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 500,
+              color: "var(--c-warm)",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {time.days}
+          </p>
+          <p className="text-sm md:text-base tracking-[0.15em]" style={{
             fontFamily: "var(--font-cn)",
-            color: dark ? "#B0A0A0" : "var(--c-text-secondary)",
+            color: "var(--c-text-secondary)",
             fontWeight: 300,
-            letterSpacing: "0.05em",
           }}>
             相识的第{" "}
-            <span style={{
-              color: "var(--c-rose)",
-              fontWeight: 600,
-              fontFamily: "var(--font-display)",
-              fontSize: "1.3em",
-              textShadow: dark ? "0 0 20px rgba(194,146,138,0.2)" : "none",
-            }}>
-              {time.days}
-            </span>{" "}
-            天
+            <span style={{ color: "var(--c-rose)" }}>{time.days}</span>
+            {" "}天
           </p>
         </motion.div>
 
-        {/* countdown cards */}
+        {/* Thin separator */}
         <motion.div
-          className="grid grid-cols-4 gap-3 md:gap-6 max-w-xl mx-auto"
+          className="mx-auto my-14 md:my-20"
+          style={{ width: "60px", height: "1px", background: "var(--c-divider)" }}
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, delay: 0.3 }}
+        />
+
+        {/* Hours · Minutes · Seconds */}
+        <motion.div
+          className="flex items-center justify-center gap-8 sm:gap-16 md:gap-24"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.2 } } }}
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.15, delayChildren: 0.2 } },
+          }}
         >
           {[
-            { value: time.days, label: "Days" },
             { value: time.hours, label: "Hours" },
             { value: time.minutes, label: "Minutes" },
             { value: time.seconds, label: "Seconds" },
-          ].map((item, i) => (
-            <motion.div key={i} variants={{ hidden: { opacity: 0, y: 40, scale: 0.85, filter: "blur(4px)" }, visible: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" } }} transition={{ type: "spring", stiffness: 120, damping: 18 }}>
-              <FlipCard value={item.value} label={item.label} dark={dark} />
+          ].map((item) => (
+            <motion.div
+              key={item.label}
+              className="text-center"
+              variants={{
+                hidden: { opacity: 0, y: 20, filter: "blur(4px)" },
+                visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+              }}
+              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              <p
+                className="text-3xl sm:text-4xl md:text-5xl tabular-nums"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 400,
+                  color: "var(--c-warm)",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {String(item.value).padStart(2, "0")}
+              </p>
+              <p className="text-[10px] tracking-[0.3em] uppercase mt-3" style={{
+                fontFamily: "var(--font-sans)",
+                color: "var(--c-warm-muted)",
+                fontWeight: 400,
+              }}>
+                {item.label}
+              </p>
             </motion.div>
           ))}
         </motion.div>

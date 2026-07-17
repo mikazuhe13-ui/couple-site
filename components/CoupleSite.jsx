@@ -11,7 +11,7 @@ import {
 } from "@/lib/data";
 
 /* ── UI primitives ── */
-import { Ripple, SectionDivider, DarkToggle, MusicToggle, MessageBoard, AmbientOrbs, Petals, SparkleField } from "@/components/ui";
+import { Ripple, SectionDivider, MusicToggle, MessageBoard } from "@/components/ui";
 
 /* ── Sections ── */
 import HeroSection from "@/components/sections/HeroSection";
@@ -22,7 +22,6 @@ import LettersSection from "@/components/sections/LettersSection";
 
 export default function CoupleSite() {
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [dark, setDark] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [ripples, setRipples] = useState([]);
   const [scrolled, setScrolled] = useState(false);
@@ -119,44 +118,15 @@ export default function CoupleSite() {
   return (
     <div
       onClick={addRipple}
-      className="min-h-screen transition-colors duration-700"
+      className="min-h-screen"
       style={{
         fontFamily: "'Inter', 'Noto Serif SC', sans-serif",
-        background: dark ? "var(--c-dark-bg)" : "var(--c-cream)",
-        color: dark ? "#E8D5C4" : "var(--c-text)",
+        background: "var(--c-bg)",
+        color: "var(--c-text)",
       }}
     >
-      {/* ═══════════ GLOBAL BACKGROUND EFFECTS ═══════════ */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        {/* Flowing gradient base */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: dark
-              ? "linear-gradient(135deg, #1A1218 0%, #1E1520 25%, #1A1218 50%, #1E1520 75%, #1A1218 100%)"
-              : "linear-gradient(135deg, #FFFAF5 0%, #FFF5F0 25%, #FFFAF5 50%, #F5E6E0 75%, #FFFAF5 100%)",
-            backgroundSize: "400% 400%",
-            animation: "gradientFlow 20s ease infinite",
-          }}
-        />
-        {/* Aurora layer */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: dark
-              ? "linear-gradient(160deg, rgba(194,146,138,0.04) 0%, rgba(201,169,110,0.03) 30%, rgba(139,94,86,0.04) 60%, rgba(194,146,138,0.02) 100%)"
-              : "linear-gradient(160deg, rgba(194,146,138,0.06) 0%, rgba(201,169,110,0.05) 30%, rgba(232,196,188,0.06) 60%, rgba(194,146,138,0.04) 100%)",
-            backgroundSize: "200% 200%",
-            animation: "auroraShift 25s ease-in-out infinite",
-          }}
-        />
-        {/* Ambient orbs */}
-        <AmbientOrbs dark={dark} count={8} />
-        {/* Sparkle field */}
-        <SparkleField dark={dark} count={35} />
-        {/* Petals */}
-        <Petals dark={dark} count={18} />
-      </div>
+      {/* Film grain overlay */}
+      <div className="fixed inset-0 pointer-events-none z-0 grain-overlay" />
 
       {/* click ripples */}
       <AnimatePresence>
@@ -168,67 +138,63 @@ export default function CoupleSite() {
       {/* ═══════════ NAVIGATION ═══════════ */}
       <motion.nav
         className="fixed top-0 w-full z-50 px-6 py-4"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 1.5 }}
         style={{
-          backdropFilter: scrolled ? "blur(24px) saturate(1.4)" : "blur(8px)",
-          background: scrolled
-            ? (dark ? "rgba(26,18,24,0.85)" : "rgba(255,250,245,0.85)")
-            : "transparent",
-          borderBottom: scrolled
-            ? `1px solid ${dark ? "rgba(194,146,138,0.06)" : "rgba(194,146,138,0.06)"}`
-            : "1px solid transparent",
-          transition: "background 0.4s, border-bottom 0.4s, backdrop-filter 0.4s",
+          backdropFilter: scrolled ? "blur(20px) saturate(1.2)" : "blur(8px)",
+          background: scrolled ? "rgba(8,8,8,0.9)" : "transparent",
+          borderBottom: scrolled ? "1px solid var(--c-divider)" : "1px solid transparent",
+          transition: "background 0.5s, border-bottom 0.5s, backdrop-filter 0.5s",
         }}
       >
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button onClick={() => scrollTo("hero")} className="flex items-center gap-2.5 group">
             <motion.div
-              whileHover={{ scale: 1.2, rotate: 15 }}
+              whileHover={{ scale: 1.15 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <Heart className="w-4 h-4 fill-current" style={{ color: "var(--c-rose)" }} />
+              <Heart className="w-3.5 h-3.5 fill-current" style={{ color: "var(--c-rose)" }} />
             </motion.div>
             <span
-              className="text-base tracking-[0.2em] uppercase"
+              className="text-sm tracking-[0.2em] uppercase"
               style={{
                 fontFamily: "var(--font-display)",
                 fontWeight: 500,
-                color: dark ? "#E8D5C4" : "var(--c-text)",
-                letterSpacing: "0.2em",
+                color: "var(--c-warm)",
               }}
             >
               Our Story
             </span>
           </button>
 
-          <div className="hidden md:flex items-center gap-7">
+          <div className="hidden md:flex items-center gap-8">
             {navLinks.map(([id, label]) => (
               <motion.button
                 key={id}
                 onClick={() => scrollTo(id)}
-                className="text-[11px] tracking-[0.2em] uppercase relative group py-1"
+                className="text-[10px] tracking-[0.25em] uppercase relative group py-1"
                 style={{
-                  fontFamily: "'Inter', sans-serif",
-                  color: dark ? "#8B7878" : "var(--c-text-muted)",
-                  fontWeight: 500,
+                  fontFamily: "var(--font-sans)",
+                  color: "var(--c-warm-muted)",
+                  fontWeight: 400,
                 }}
               >
                 {label}
                 <motion.div
                   className="absolute bottom-0 left-0 right-0 h-px origin-left"
-                  style={{ background: "var(--c-rose)" }}
+                  style={{ background: "var(--c-gold)" }}
                   initial={{ scaleX: 0 }}
                   whileHover={{ scaleX: 1 }}
                   transition={{ duration: 0.3 }}
                 />
               </motion.button>
             ))}
-            <DarkToggle dark={dark} setDark={setDark} />
           </div>
 
           <div className="flex md:hidden items-center gap-3">
-            <DarkToggle dark={dark} setDark={setDark} />
             <motion.button whileTap={{ scale: 0.85 }} onClick={() => setMenuOpen(!menuOpen)}>
-              <Menu className="w-5 h-5" style={{ color: dark ? "#E8D5C4" : "var(--c-text)" }} />
+              <Menu className="w-5 h-5" style={{ color: "var(--c-warm)" }} />
             </motion.button>
           </div>
         </div>
@@ -238,11 +204,8 @@ export default function CoupleSite() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-7"
-            style={{
-              background: dark ? "rgba(26,18,24,0.97)" : "rgba(255,250,245,0.97)",
-              backdropFilter: "blur(30px)",
-            }}
+            className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-8"
+            style={{ background: "rgba(8,8,8,0.97)", backdropFilter: "blur(30px)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -255,7 +218,7 @@ export default function CoupleSite() {
                 className="text-2xl tracking-wider"
                 style={{
                   fontFamily: "var(--font-cn)",
-                  color: dark ? "#E8D5C4" : "var(--c-text)",
+                  color: "var(--c-warm)",
                   fontWeight: 300,
                 }}
                 initial={{ opacity: 0, y: 20 }}
@@ -270,33 +233,28 @@ export default function CoupleSite() {
       </AnimatePresence>
 
       {/* ═══════════ SECTIONS ═══════════ */}
-      <HeroSection dark={dark} scrollTo={scrollTo} heroY={heroY} heroOpacity={heroOpacity} />
+      <HeroSection scrollTo={scrollTo} heroY={heroY} heroOpacity={heroOpacity} />
 
-      <CountdownSection dark={dark} startDate={startDate} time={time} />
+      <CountdownSection startDate={startDate} time={time} />
 
-      <SectionDivider dark={dark} />
+      <SectionDivider />
 
-      <DiarySection dark={dark} diaryEntries={diaryEntries} />
+      <DiarySection diaryEntries={diaryEntries} />
 
-      <SectionDivider dark={dark} />
+      <SectionDivider />
 
-      <GallerySection dark={dark} galleryItems={galleryItems} />
+      <GallerySection galleryItems={galleryItems} />
 
-      <SectionDivider dark={dark} />
+      <SectionDivider />
 
-      <LettersSection dark={dark} loveLetters={loveLetters} />
+      <LettersSection loveLetters={loveLetters} />
 
-      <SectionDivider dark={dark} />
+      <SectionDivider />
 
       {/* ═══════════ MESSAGE BOARD ═══════════ */}
       <section
         id="messages"
-        className="relative py-28 md:py-40 px-6 overflow-hidden"
-        style={{
-          background: dark
-            ? "linear-gradient(180deg, var(--c-dark-bg), #1E1520)"
-            : "linear-gradient(180deg, var(--c-cream), #FFF5F0)",
-        }}
+        className="relative py-28 md:py-40 px-6"
       >
         <div className="max-w-3xl mx-auto relative z-10">
           <motion.div
@@ -305,17 +263,17 @@ export default function CoupleSite() {
             viewport={{ once: true }}
             variants={{
               hidden: { opacity: 0, y: 30 },
-              visible: { opacity: 1, y: 0, transition: { duration: 0.7 } },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
             }}
             className="text-center mb-16 md:mb-24"
           >
-            <MessageCircle className="w-5 h-5 mx-auto mb-5" style={{ color: "var(--c-gold)" }} />
+            <MessageCircle className="w-4 h-4 mx-auto mb-5" style={{ color: "var(--c-gold-dim)" }} />
             <h3
               className="text-3xl md:text-5xl lg:text-6xl mb-3"
               style={{
                 fontFamily: "var(--font-display)",
                 fontWeight: 500,
-                color: dark ? "#E8D5C4" : "var(--c-text)",
+                color: "var(--c-warm)",
                 letterSpacing: "0.02em",
               }}
             >
@@ -325,26 +283,19 @@ export default function CoupleSite() {
               className="text-lg md:text-xl tracking-wider"
               style={{
                 fontFamily: "var(--font-cn)",
-                color: dark ? "#8B7878" : "var(--c-text-secondary)",
+                color: "var(--c-text-secondary)",
                 fontWeight: 300,
               }}
             >
               留言板
             </p>
           </motion.div>
-          <MessageBoard dark={dark} messages={messages} onAddMessage={handleAddMessage} />
+          <MessageBoard messages={messages} onAddMessage={handleAddMessage} />
         </div>
       </section>
 
       {/* ═══════════ FOOTER ═══════════ */}
-      <footer
-        className="relative py-20 px-6 text-center overflow-hidden"
-        style={{
-          background: dark
-            ? "linear-gradient(180deg, #1E1520, #1A1218)"
-            : "linear-gradient(180deg, #FFF5F0, #FFFAF5)",
-        }}
-      >
+      <footer className="relative py-20 px-6 text-center">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -352,21 +303,21 @@ export default function CoupleSite() {
           transition={{ duration: 1 }}
         >
           <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="h-px w-16" style={{ background: "linear-gradient(to right, transparent, var(--c-rose-light))" }} />
+            <div className="h-px w-16" style={{ background: "linear-gradient(to right, transparent, var(--c-divider))" }} />
             <motion.div
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
-              <Heart className="w-4 h-4 fill-current" style={{ color: "var(--c-rose)" }} />
+              <Heart className="w-3 h-3 fill-current" style={{ color: "var(--c-rose)" }} />
             </motion.div>
-            <div className="h-px w-16" style={{ background: "linear-gradient(to left, transparent, var(--c-rose-light))" }} />
+            <div className="h-px w-16" style={{ background: "linear-gradient(to left, transparent, var(--c-divider))" }} />
           </div>
           <p
             className="text-[10px] tracking-[0.3em] uppercase mb-2"
             style={{
-              fontFamily: "'Inter', sans-serif",
-              color: dark ? "#504040" : "var(--c-text-muted)",
-              fontWeight: 500,
+              fontFamily: "var(--font-sans)",
+              color: "var(--c-text-muted)",
+              fontWeight: 400,
             }}
           >
             Made with Love
@@ -374,8 +325,8 @@ export default function CoupleSite() {
           <p
             className="text-xs"
             style={{
-              color: dark ? "#3A2E2E" : "var(--c-text-muted)",
-              opacity: 0.6,
+              color: "var(--c-text-muted)",
+              opacity: 0.4,
             }}
           >
             {new Date().getFullYear()} · Our Love Story
@@ -383,7 +334,7 @@ export default function CoupleSite() {
         </motion.div>
       </footer>
 
-      <MusicToggle dark={dark} />
+      <MusicToggle />
     </div>
   );
 }
