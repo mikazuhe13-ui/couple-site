@@ -41,7 +41,7 @@ export default function CoupleSite() {
       .then((r) => r.json())
       .then((d) => {
         if (d.diary?.length) setDiaryEntries(d.diary);
-        if (d.gallery?.length) setGalleryItems(d.gallery);
+        if (d.gallery?.length) setGalleryItems([...d.gallery, ...FALLBACK_GALLERY]);
         if (d.letters?.length) setLoveLetters(d.letters);
         if (d.messages?.length) setMessages(d.messages);
         if (d.settings?.length) {
