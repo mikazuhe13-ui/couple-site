@@ -37,4 +37,3 @@ export function Ripple({ x, y, onDone }) {
     </motion.div>
   );
 }
-

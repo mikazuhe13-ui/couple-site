@@ -8,6 +8,7 @@ import {
 } from "framer-motion";
 import { Heart, MessageCircle } from "lucide-react";
 import useIsMobile from "@/hooks/useIsMobile";
+import Sakura from "@/components/effects/Sakura";
 
 /* ── UI primitives ── */
 import { Ripple, SectionDivider } from "@/components/ui";
@@ -21,6 +22,7 @@ import CountdownSection from "@/components/sections/CountdownSection";
 import DiarySection from "@/components/sections/DiarySection";
 import GallerySection from "@/components/sections/GallerySection";
 import LettersSection from "@/components/sections/LettersSection";
+import VowsSection from "@/components/sections/VowsSection";
 
 export default function CoupleSite({ initialContent }) {
   const isMobile = useIsMobile();
@@ -32,6 +34,7 @@ export default function CoupleSite({ initialContent }) {
     diaryEntries,
     galleryItems,
     loveLetters,
+    vowsItems,
     messages: initialMessages,
   } = initialContent;
   const [messages, setMessages] = useState(initialMessages);
@@ -76,6 +79,7 @@ export default function CoupleSite({ initialContent }) {
     { id: "timer", label: "计时" },
     { id: "diary", label: "日记" },
     { id: "gallery", label: "相册" },
+    { id: "vows", label: "誓言" },
     { id: "letters", label: "情书" },
     { id: "messages", label: "留言" },
   ];
@@ -92,6 +96,9 @@ export default function CoupleSite({ initialContent }) {
     >
       {/* Film grain overlay — very subtle warm texture */}
       <div className="fixed inset-0 pointer-events-none z-0 grain-overlay" />
+
+      {/* Sakura petals — fades in after hero */}
+      <Sakura />
 
       {/* click ripples — desktop only */}
       {!isMobile && (
@@ -120,6 +127,10 @@ export default function CoupleSite({ initialContent }) {
       <SectionDivider />
 
       <LettersSection loveLetters={loveLetters} />
+
+      <SectionDivider />
+
+      <VowsSection vows={vowsItems} />
 
       <SectionDivider />
 

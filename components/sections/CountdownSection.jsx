@@ -53,7 +53,7 @@ export default function CountdownSection({ startDate }) {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <p className="text-[10px] md:text-xs tracking-[0.3em] uppercase mb-4 md:mb-6" style={{
+          <p className="text-xs md:text-xs tracking-[0.3em] uppercase mb-4 md:mb-6" style={{
             fontFamily: "var(--font-sans)",
             color: "var(--c-gold-dim)",
             fontWeight: 400,
@@ -128,7 +128,7 @@ export default function CountdownSection({ startDate }) {
               >
                 {String(item.value).padStart(2, "0")}
               </p>
-              <p className="text-[9px] md:text-[10px] tracking-[0.25em] uppercase mt-2 md:mt-3" style={{
+              <p className="text-[11px] md:text-[10px] tracking-[0.25em] uppercase mt-2 md:mt-3" style={{
                 fontFamily: "var(--font-sans)",
                 color: "var(--c-warm-muted)",
                 fontWeight: 400,
