@@ -10,12 +10,22 @@ export default function AdminLogin() {
   const [error, setError] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      sessionStorage.setItem("admin_auth", "true");
-      router.push("/admin/dashboard");
-    } else {
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        sessionStorage.setItem("admin_auth", "true");
+        router.push("/admin/dashboard");
+      } else {
+        setError(true);
+        setTimeout(() => setError(false), 2000);
+      }
+    } catch {
       setError(true);
       setTimeout(() => setError(false), 2000);
     }
