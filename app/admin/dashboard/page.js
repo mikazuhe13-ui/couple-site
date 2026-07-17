@@ -54,7 +54,7 @@ export default function AdminDashboard() {
     if (typeof window !== "undefined" && !sessionStorage.getItem("admin_auth")) {
       router.push("/admin");
     }
-  }, []);
+  }, [router]);
 
   /* fetch data */
   const fetchData = async () => {
