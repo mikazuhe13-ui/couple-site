@@ -18,6 +18,33 @@ export default function HeroSection({ dark, scrollTo, heroY, heroOpacity }) {
         }}
       />
 
+      {/* video background */}
+      <motion.div
+        className="absolute inset-0 overflow-hidden"
+        style={{ y: heroY }}
+      >
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ filter: dark ? "brightness(0.35) saturate(0.8)" : "brightness(0.75) saturate(1.1)" }}
+        >
+          <source src="/hero-bg.mp4" type="video/mp4" />
+        </video>
+        {/* overlay for text readability */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: dark
+              ? "linear-gradient(170deg, rgba(26,18,24,0.7) 0%, rgba(32,21,32,0.6) 50%, rgba(26,18,24,0.75) 100%)"
+              : "linear-gradient(170deg, rgba(255,248,245,0.55) 0%, rgba(253,232,224,0.45) 50%, rgba(255,245,240,0.6) 100%)",
+          }}
+        />
+      </motion.div>
+
       {/* ambient orbs */}
       <AmbientOrbs dark={dark} count={5} />
 
