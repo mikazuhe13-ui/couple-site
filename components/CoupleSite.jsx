@@ -6,7 +6,7 @@ import { Heart, Menu, MessageCircle } from "lucide-react";
 
 /* ── Data ── */
 import {
-  FALLBACK_START, FALLBACK_MILESTONES, FALLBACK_DIARY,
+  FALLBACK_START, FALLBACK_DIARY,
   FALLBACK_GALLERY, FALLBACK_LETTERS,
 } from "@/lib/data";
 
@@ -16,7 +16,6 @@ import { Ripple, SectionDivider, DarkToggle, MusicToggle, MessageBoard, AmbientO
 /* ── Sections ── */
 import HeroSection from "@/components/sections/HeroSection";
 import CountdownSection from "@/components/sections/CountdownSection";
-import TimelineSection from "@/components/sections/TimelineSection";
 import DiarySection from "@/components/sections/DiarySection";
 import GallerySection from "@/components/sections/GallerySection";
 import LettersSection from "@/components/sections/LettersSection";
@@ -30,7 +29,6 @@ export default function CoupleSite() {
 
   /* ── API data state ── */
   const [startDate, setStartDate] = useState(FALLBACK_START);
-  const [milestones, setMilestones] = useState(FALLBACK_MILESTONES);
   const [diaryEntries, setDiaryEntries] = useState(FALLBACK_DIARY);
   const [galleryItems, setGalleryItems] = useState(FALLBACK_GALLERY);
   const [loveLetters, setLoveLetters] = useState(FALLBACK_LETTERS);
@@ -41,7 +39,6 @@ export default function CoupleSite() {
     fetch("/api/content")
       .then((r) => r.json())
       .then((d) => {
-        if (d.milestones?.length) setMilestones(d.milestones);
         if (d.diary?.length) setDiaryEntries(d.diary);
         if (d.gallery?.length) setGalleryItems(d.gallery);
         if (d.letters?.length) setLoveLetters(d.letters);
@@ -113,7 +110,6 @@ export default function CoupleSite() {
 
   const navLinks = [
     ["timer", "计时"],
-    ["timeline", "时间线"],
     ["diary", "日记"],
     ["gallery", "相册"],
     ["letters", "情书"],
@@ -277,10 +273,6 @@ export default function CoupleSite() {
       <HeroSection dark={dark} scrollTo={scrollTo} heroY={heroY} heroOpacity={heroOpacity} />
 
       <CountdownSection dark={dark} startDate={startDate} time={time} />
-
-      <SectionDivider dark={dark} />
-
-      <TimelineSection dark={dark} milestones={milestones} />
 
       <SectionDivider dark={dark} />
 
