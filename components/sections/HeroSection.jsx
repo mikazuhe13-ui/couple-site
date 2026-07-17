@@ -1,10 +1,50 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Heart, ChevronDown } from "lucide-react";
 import { Petals, AmbientOrbs } from "@/components/ui";
 
 export default function HeroSection({ dark, scrollTo, heroY, heroOpacity }) {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Try to play immediately
+    const tryPlay = () => {
+      if (video.paused) {
+        video.play().catch(() => {
+          // Browser blocked autoplay, will retry on user interaction
+        });
+      }
+    };
+
+    // Retry on user interaction
+    const handleInteraction = () => {
+      tryPlay();
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("scroll", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+    };
+
+    // Try immediately
+    const timer = setTimeout(tryPlay, 100);
+
+    // Also retry on user interaction
+    document.addEventListener("click", handleInteraction);
+    document.addEventListener("scroll", handleInteraction);
+    document.addEventListener("touchstart", handleInteraction);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("scroll", handleInteraction);
+      document.removeEventListener("touchstart", handleInteraction);
+    };
+  }, []);
+
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden grain-overlay">
       {/* layered background */}
@@ -24,6 +64,7 @@ export default function HeroSection({ dark, scrollTo, heroY, heroOpacity }) {
         style={{ y: heroY }}
       >
         <video
+          ref={videoRef}
           autoPlay
           loop
           muted
