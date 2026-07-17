@@ -7,13 +7,14 @@ function createPetal(W, H, startAbove = false) {
   return {
     x: Math.random() * W,
     y: startAbove ? -(Math.random() * H * 0.5 + 30) : Math.random() * H,
-    size: 5 + Math.random() * 10,
-    speedY: 0.25 + Math.random() * 0.55,
+    size: 10 + Math.random() * 18,
+    speedY: 0.35 + Math.random() * 0.65,
     rot: Math.random() * Math.PI * 2,
-    rotSpeed: (Math.random() - 0.5) * 0.015,
+    rotSpeed: (Math.random() - 0.5) * 0.018,
     phase: Math.random() * Math.PI * 2,
-    swayAmp: 0.3 + Math.random() * 0.5,
-    opacity: 0.12 + Math.random() * 0.22,
+    swayAmp: 0.4 + Math.random() * 0.7,
+    opacity: 0.25 + Math.random() * 0.35,
+    hue: 340 + Math.random() * 20,
   };
 }
 
@@ -25,7 +26,9 @@ function drawPetal(ctx, p) {
   ctx.translate(p.x, p.y);
   ctx.rotate(p.rot);
   ctx.globalAlpha = p.opacity;
-  ctx.fillStyle = "#F2A5B0";
+  ctx.fillStyle = `hsl(${p.hue}, 70%, 78%)`;
+  ctx.shadowColor = "rgba(242,165,176,0.3)";
+  ctx.shadowBlur = p.size * 0.4;
   ctx.beginPath();
   ctx.moveTo(0, 0);
   ctx.bezierCurveTo(w * 0.6, -len * 0.25, w, -len * 0.55, w * 0.3, -len);
@@ -42,11 +45,8 @@ export default function Sakura() {
   const canvasRef = useRef(null);
   const [visible, setVisible] = useState(false);
 
-  /* Fade in after user scrolls past the hero */
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > window.innerHeight * 0.55);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    requestAnimationFrame(() => setVisible(true));
   }, []);
 
   /* Canvas animation loop */
@@ -71,7 +71,7 @@ export default function Sakura() {
 
     const init = () => {
       resize();
-      const n = Math.min(Math.floor(W / 28), 38);
+      const n = Math.min(Math.floor(W / 20), 55);
       petals = Array.from({ length: n }, () => createPetal(W, H, true));
     };
 
@@ -110,7 +110,7 @@ export default function Sakura() {
       className="fixed inset-0 pointer-events-none z-[1]"
       style={{
         opacity: visible ? 1 : 0,
-        transition: "opacity 2.5s ease-in-out",
+        transition: "opacity 1.5s ease-in-out",
       }}
     />
   );

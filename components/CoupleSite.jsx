@@ -110,19 +110,33 @@ export default function CoupleSite() {
     }
   }, [musicPlaying]);
 
+  /* Try autoplay immediately, fallback to first interaction */
   useEffect(() => {
-    const tryAutoplay = () => {
-      if (autoplayRef.current) return;
-      autoplayRef.current = true;
-      setMusicPlaying(true);
-    };
-    const events = ["click", "touchstart", "keydown"];
-    events.forEach((e) => document.addEventListener(e, tryAutoplay, { once: true }));
-    return () => events.forEach((e) => document.removeEventListener(e, tryAutoplay));
-  }, []);
+    const audio = new Audio("/bgm.mp3");
+    audio.loop = true;
+    audio.volume = 0;
+    audioRef.current = audio;
 
-  useEffect(() => {
+    let fallbackCleanup = null;
+
+    audio.play()
+      .then(() => {
+        autoplayRef.current = true;
+        setMusicPlaying(true);
+      })
+      .catch(() => {
+        const tryOnce = () => {
+          if (autoplayRef.current) return;
+          autoplayRef.current = true;
+          setMusicPlaying(true);
+        };
+        const events = ["click", "touchstart", "keydown", "scroll"];
+        events.forEach((e) => document.addEventListener(e, tryOnce, { once: true }));
+        fallbackCleanup = () => events.forEach((e) => document.removeEventListener(e, tryOnce));
+      });
+
     return () => {
+      fallbackCleanup?.();
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
