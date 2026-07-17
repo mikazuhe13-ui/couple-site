@@ -8,11 +8,15 @@ export async function GET(request) {
 
   try {
     if (type && type !== "all") {
-      const { data, error } = await supabase
-        .from(type)
-        .select("*")
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: true });
+      let query = supabase.from(type).select("*");
+      if (["milestones", "gallery", "letters"].includes(type)) {
+        query = query.order("sort_order", { ascending: true });
+      } else if (type === "diary") {
+        query = query.order("date", { ascending: false });
+      } else if (type === "messages") {
+        query = query.order("created_at", { ascending: false });
+      }
+      const { data, error } = await query;
       if (error) throw error;
       return NextResponse.json(data || []);
     }
