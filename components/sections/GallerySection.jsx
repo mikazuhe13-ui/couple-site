@@ -1,16 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { SectionHeader } from "@/components/ui";
 import useIsMobile from "@/hooks/useIsMobile";
 
-/* ── Gallery item with blur-to-clear reveal ── */
+/* ══════════════════════════════════════════
+   GalleryItem — 3D tilt on mouse + elegant frame
+   ══════════════════════════════════════════ */
 function GalleryItem({ item, i, onClick, isMobile }) {
   const ref = useRef(null);
   const [revealed, setRevealed] = useState(false);
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0, scale: 1 });
+  const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 });
 
+  /* Reveal on scroll */
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -27,61 +32,149 @@ function GalleryItem({ item, i, onClick, isMobile }) {
     return () => observer.disconnect();
   }, [i, isMobile]);
 
-  /* Mobile: full-width edge-to-edge, taller; Desktop: masonry card */
+  /* 3D tilt on mouse move (desktop only) */
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (isMobile || !ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const maxTilt = 8;
+      const ry = ((x - cx) / cx) * maxTilt;
+      const rx = -((y - cy) / cy) * maxTilt;
+      setTilt({ rx, ry, scale: 1.03 });
+      setGlare({
+        x: (x / rect.width) * 100,
+        y: (y / rect.height) * 100,
+        opacity: 0.15,
+      });
+    },
+    [isMobile]
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    setTilt({ rx: 0, ry: 0, scale: 1 });
+    setGlare((g) => ({ ...g, opacity: 0 }));
+  }, []);
+
+  /* Mobile: full-width edge-to-edge, taller */
   const mobileHeight = i % 3 === 0 ? 280 : i % 3 === 1 ? 220 : 260;
 
   return (
     <motion.div
       ref={ref}
-      className={`cursor-pointer group relative overflow-hidden ${
+      className={`group relative overflow-hidden ${
         isMobile
           ? "w-full mb-2 rounded-none"
-          : "mb-3 md:mb-4 break-inside-avoid"
+          : "mb-5 md:mb-6 break-inside-avoid"
       }`}
       onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: isMobile ? 0.4 : 0.6, delay: i * 0.03 }}
+      style={
+        !isMobile
+          ? {
+              perspective: "800px",
+              transformStyle: "preserve-3d",
+            }
+          : undefined
+      }
     >
+      {/* ─ Elegant gold frame wrapper ── */}
       <div
-        className="overflow-hidden transition-all ease-out"
-        style={{
-          filter: revealed
-            ? "blur(0px) brightness(1)"
-            : isMobile
-              ? "blur(10px) brightness(1.1)"
-              : "blur(20px) brightness(1.15)",
-          transform: revealed ? "scale(1)" : "scale(1.02)",
-          height: isMobile ? mobileHeight : item.h || 240,
-          transitionDuration: isMobile ? "800ms" : "1500ms",
-        }}
+        className="relative"
+        style={
+          !isMobile
+            ? {
+                transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) scale(${tilt.scale})`,
+                transition: "transform 0.15s ease-out",
+                transformStyle: "preserve-3d",
+              }
+            : undefined
+        }
       >
-        {item.image_url ? (
-          <img
-            src={item.image_url}
-            alt={item.caption || ""}
-            className={`w-full h-full object-cover film-grade ${isMobile ? "" : ""}`}
-            style={{ display: "block" }}
-            loading="lazy"
-          />
-        ) : (
+        {/* Outer gold border */}
+        <div
+          className="overflow-hidden"
+          style={{
+            padding: isMobile ? 0 : "6px",
+            background: "linear-gradient(145deg, #D4AF6E, #C9A050, #E8D5A3, #B8963E)",
+            borderRadius: isMobile ? 0 : "3px",
+            boxShadow: isMobile
+              ? "none"
+              : "0 8px 32px rgba(180,150,100,0.18), 0 2px 8px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.3)",
+          }}
+        >
+          {/* Inner thin line */}
           <div
-            className="w-full h-full flex items-center justify-center"
-            style={{ background: "var(--c-surface)" }}
+            style={{
+              padding: isMobile ? 0 : "2px",
+              background: "linear-gradient(145deg, #F5E6C8, #E8D5A3)",
+              borderRadius: isMobile ? 0 : "2px",
+            }}
           >
+            {/* Image container */}
             <div
-              className="w-full h-full"
+              className="overflow-hidden transition-all ease-out"
               style={{
-                background: item.gradient,
-                opacity: 0.4,
-                filter: "saturate(0.8) brightness(0.95)",
+                filter: revealed
+                  ? "blur(0px) brightness(1)"
+                  : isMobile
+                    ? "blur(10px) brightness(1.1)"
+                    : "blur(20px) brightness(1.15)",
+                transform: revealed ? "scale(1)" : "scale(1.02)",
+                height: isMobile ? mobileHeight : item.h || 240,
+                transitionDuration: isMobile ? "800ms" : "1500ms",
+                borderRadius: isMobile ? 0 : "1px",
               }}
-            />
+            >
+              {item.image_url ? (
+                <img
+                  src={item.image_url}
+                  alt={item.caption || ""}
+                  className="w-full h-full object-cover"
+                  style={{ display: "block" }}
+                  loading="lazy"
+                />
+              ) : (
+                <div
+                  className="w-full h-full flex items-center justify-center"
+                  style={{ background: "var(--c-surface)" }}
+                >
+                  <div
+                    className="w-full h-full"
+                    style={{
+                      background: item.gradient,
+                      opacity: 0.4,
+                      filter: "saturate(0.8) brightness(0.95)",
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
+        </div>
+
+        {/* Glare overlay — follows mouse */}
+        {!isMobile && (
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, rgba(255,255,255,${glare.opacity}), transparent 60%)`,
+              transition: "opacity 0.3s",
+              borderRadius: "3px",
+              zIndex: 5,
+            }}
+          />
         )}
       </div>
 
-      {/* Caption overlay — tap to show on mobile, hover on desktop */}
+      {/* Caption overlay */}
       {item.caption && (
         <div
           className={`absolute bottom-0 left-0 right-0 p-3 md:p-4 ${
@@ -89,7 +182,10 @@ function GalleryItem({ item, i, onClick, isMobile }) {
               ? "opacity-100"
               : "opacity-0 group-hover:opacity-100"
           } transition-opacity duration-500`}
-          style={{ background: "linear-gradient(transparent, rgba(60,40,30,0.55))" }}
+          style={{
+            background: "linear-gradient(transparent, rgba(60,40,30,0.55))",
+            zIndex: 6,
+          }}
         >
           <p className="text-xs text-white/80" style={{ fontFamily: "var(--font-cn)" }}>
             {item.caption}
@@ -100,6 +196,9 @@ function GalleryItem({ item, i, onClick, isMobile }) {
   );
 }
 
+/* ══════════════════════════════════════════
+   GallerySection
+   ══════════════════════════════════════════ */
 export default function GallerySection({ galleryItems }) {
   const [lightbox, setLightbox] = useState(null);
   const isMobile = useIsMobile();
@@ -128,8 +227,8 @@ export default function GallerySection({ galleryItems }) {
             ))}
           </div>
         ) : (
-          /* ── Desktop: masonry columns ── */
-          <div className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4">
+          /* ── Desktop: masonry columns with 3D tilt ── */
+          <div className="columns-2 md:columns-3 lg:columns-4 gap-4 md:gap-5">
             {galleryItems.map((item, i) => (
               <GalleryItem
                 key={i}
@@ -149,7 +248,7 @@ export default function GallerySection({ galleryItems }) {
         )}
       </div>
 
-      {/* Lightbox */}
+      {/* ═══════════ Lightbox ═══════════ */}
       <AnimatePresence>
         {lightbox !== null && (
           <motion.div
