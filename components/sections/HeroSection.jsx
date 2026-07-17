@@ -52,7 +52,7 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
         style={{
-          filter: "brightness(0.85) saturate(1.15) contrast(1.02)",
+          filter: "brightness(1.05) saturate(1.1) contrast(1.02)",
           objectPosition: isMobile ? "center center" : undefined,
         }}
       >
@@ -67,8 +67,8 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
         className="absolute inset-0"
         style={{
           background: isMobile
-            ? "linear-gradient(180deg, rgba(255,251,245,0.35) 0%, rgba(255,245,235,0.15) 40%, rgba(255,248,240,0.2) 75%, rgba(255,251,245,0.6) 100%)"
-            : "linear-gradient(180deg, rgba(255,251,245,0.3) 0%, rgba(255,245,235,0.1) 40%, rgba(255,248,240,0.15) 80%, rgba(255,251,245,0.5) 100%)",
+            ? "linear-gradient(180deg, rgba(255,251,245,0.12) 0%, rgba(255,245,235,0.04) 40%, rgba(255,248,240,0.06) 75%, rgba(255,251,245,0.18) 100%)"
+            : "linear-gradient(180deg, rgba(255,251,245,0.08) 0%, rgba(255,245,235,0.02) 40%, rgba(255,248,240,0.04) 80%, rgba(255,251,245,0.12) 100%)",
         }}
       />
     </div>
@@ -83,7 +83,7 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse at center, transparent 50%, rgba(255,240,225,0.4) 100%)",
+          background: "radial-gradient(ellipse at center, transparent 55%, rgba(255,240,225,0.15) 100%)",
         }}
       />
 
