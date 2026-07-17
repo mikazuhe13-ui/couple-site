@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Heart, Plus, Pencil, Trash2, LogOut, Star, MapPin, Music, Gift, Sparkles,
-  BookOpen, Camera, Mail, MessageCircle, Settings, ChevronLeft, Save, X,
+  BookOpen, Camera, Mail, MessageCircle, Settings, ChevronLeft, Save, X, Upload,
 } from "lucide-react";
 
 const TABS = [
@@ -45,6 +45,9 @@ export default function AdminDashboard() {
   const [form, setForm] = useState({});
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadPreview, setUploadPreview] = useState("");
+  const fileInputRef = useRef(null);
 
   /* auth check */
   useEffect(() => {
@@ -74,6 +77,27 @@ export default function AdminDashboard() {
     setTimeout(() => setToast(""), 2500);
   };
 
+  /* file upload */
+  const handleUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      setForm((f) => ({ ...f, image_url: json.url }));
+      setUploadPreview(URL.createObjectURL(file));
+      showToast("上传成功");
+    } catch (err) {
+      showToast("上传失败: " + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   /* CRUD */
   const openAdd = () => {
     setAdding(true);
@@ -91,6 +115,8 @@ export default function AdminDashboard() {
     setEditing(null);
     setAdding(false);
     setForm({});
+    setUploadPreview("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleSave = async () => {
@@ -208,9 +234,54 @@ export default function AdminDashboard() {
       case "gallery":
         return (
           <>
+            {/* File upload area */}
             <div>
-              <label className="text-xs mb-1 block" style={{ color: "#9B7070" }}>图片URL（可选，不填则显示渐变色）</label>
-              <input className={inputCls} style={inputStyle} placeholder="https://..." value={form.image_url || ""} onChange={(e) => setForm({ ...form, image_url: e.target.value })} />
+              <label className="text-xs mb-1 block" style={{ color: "#9B7070" }}>上传图片</label>
+              <div
+                className="relative rounded-xl overflow-hidden cursor-pointer"
+                style={{
+                  height: 160,
+                  background: uploadPreview
+                    ? `url(${uploadPreview}) center/cover`
+                    : form.image_url
+                    ? `url(${form.image_url}) center/cover`
+                    : "rgba(196,129,129,0.06)",
+                  border: "1px dashed rgba(196,129,129,0.25)",
+                }}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {(!uploadPreview && !form.image_url) && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                    {uploading ? (
+                      <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
+                        <Upload className="w-6 h-6" style={{ color: "#C48181" }} />
+                      </motion.div>
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6" style={{ color: "#D4A38B" }} />
+                        <span className="text-xs" style={{ color: "#9B7070" }}>点击选择图片（JPG/PNG/WebP/GIF，最大 5MB）</span>
+                      </>
+                    )}
+                  </div>
+                )}
+                {(uploadPreview || form.image_url) && (
+                  <div className="absolute bottom-0 left-0 right-0 py-2 px-3 text-center" style={{ background: "rgba(0,0,0,0.4)" }}>
+                    <span className="text-xs text-white">点击更换图片</span>
+                  </div>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+                onChange={handleUpload}
+                disabled={uploading}
+              />
+            </div>
+            <div>
+              <label className="text-xs mb-1 block" style={{ color: "#9B7070" }}>或输入图片URL（可选）</label>
+              <input className={inputCls} style={inputStyle} placeholder="https://..." value={form.image_url || ""} onChange={(e) => { setForm({ ...form, image_url: e.target.value }); setUploadPreview(""); }} />
             </div>
             <div>
               <label className="text-xs mb-1 block" style={{ color: "#9B7070" }}>说明文字</label>
