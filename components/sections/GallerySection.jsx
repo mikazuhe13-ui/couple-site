@@ -4,9 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { SectionHeader } from "@/components/ui";
+import useIsMobile from "@/hooks/useIsMobile";
 
 /* ── Gallery item with blur-to-clear reveal ── */
-function GalleryItem({ item, i, onClick }) {
+function GalleryItem({ item, i, onClick, isMobile }) {
   const ref = useRef(null);
   const [revealed, setRevealed] = useState(false);
 
@@ -16,7 +17,7 @@ function GalleryItem({ item, i, onClick }) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => setRevealed(true), i * 80);
+          setTimeout(() => setRevealed(true), isMobile ? i * 40 : i * 80);
           observer.unobserve(el);
         }
       },
@@ -24,31 +25,44 @@ function GalleryItem({ item, i, onClick }) {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [i]);
+  }, [i, isMobile]);
+
+  /* Mobile: full-width edge-to-edge, taller; Desktop: masonry card */
+  const mobileHeight = i % 3 === 0 ? 280 : i % 3 === 1 ? 220 : 260;
 
   return (
     <motion.div
       ref={ref}
-      className="mb-3 md:mb-4 break-inside-avoid cursor-pointer group relative overflow-hidden"
+      className={`cursor-pointer group relative overflow-hidden ${
+        isMobile
+          ? "w-full mb-2 rounded-none"
+          : "mb-3 md:mb-4 break-inside-avoid"
+      }`}
       onClick={onClick}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.6, delay: i * 0.05 }}
+      transition={{ duration: isMobile ? 0.4 : 0.6, delay: i * 0.03 }}
     >
       <div
-        className="overflow-hidden transition-all duration-[1.5s] ease-out"
+        className="overflow-hidden transition-all ease-out"
         style={{
-          filter: revealed ? "blur(0px) brightness(1)" : "blur(20px) brightness(0.7)",
-          transform: revealed ? "scale(1)" : "scale(1.03)",
-          height: item.h || 240,
+          filter: revealed
+            ? "blur(0px) brightness(1)"
+            : isMobile
+              ? "blur(10px) brightness(0.75)"
+              : "blur(20px) brightness(0.7)",
+          transform: revealed ? "scale(1)" : "scale(1.02)",
+          height: isMobile ? mobileHeight : item.h || 240,
+          transitionDuration: isMobile ? "800ms" : "1500ms",
         }}
       >
         {item.image_url ? (
           <img
             src={item.image_url}
             alt={item.caption || ""}
-            className="w-full h-full object-cover film-grade"
+            className={`w-full h-full object-cover film-grade ${isMobile ? "" : ""}`}
             style={{ display: "block" }}
+            loading="lazy"
           />
         ) : (
           <div
@@ -67,10 +81,14 @@ function GalleryItem({ item, i, onClick }) {
         )}
       </div>
 
-      {/* Hover overlay with caption */}
+      {/* Caption overlay — tap to show on mobile, hover on desktop */}
       {item.caption && (
         <div
-          className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          className={`absolute bottom-0 left-0 right-0 p-3 md:p-4 ${
+            isMobile
+              ? "opacity-100"
+              : "opacity-0 group-hover:opacity-100"
+          } transition-opacity duration-500`}
           style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.7))" }}
         >
           <p className="text-xs text-white/70" style={{ fontFamily: "var(--font-cn)" }}>
@@ -84,23 +102,45 @@ function GalleryItem({ item, i, onClick }) {
 
 export default function GallerySection({ galleryItems }) {
   const [lightbox, setLightbox] = useState(null);
+  const isMobile = useIsMobile();
 
   return (
-    <section id="gallery" className="relative py-28 md:py-40 px-6">
-      <div className="max-w-6xl mx-auto relative z-10">
+    <section
+      id="gallery"
+      className={`relative z-10 ${
+        isMobile ? "py-16 px-0" : "py-28 md:py-40 px-6"
+      }`}
+    >
+      <div className={`${isMobile ? "px-5" : "max-w-6xl mx-auto"}`}>
         <SectionHeader enTitle="Our Gallery" cnTitle="我们的相册" />
 
-        {/* Masonry grid */}
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4">
-          {galleryItems.map((item, i) => (
-            <GalleryItem
-              key={i}
-              item={item}
-              i={i}
-              onClick={() => setLightbox(i)}
-            />
-          ))}
-        </div>
+        {isMobile ? (
+          /* ── Mobile: single-column vertical scroll ── */
+          <div className="flex flex-col">
+            {galleryItems.map((item, i) => (
+              <GalleryItem
+                key={i}
+                item={item}
+                i={i}
+                isMobile={isMobile}
+                onClick={() => setLightbox(i)}
+              />
+            ))}
+          </div>
+        ) : (
+          /* ── Desktop: masonry columns ── */
+          <div className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4">
+            {galleryItems.map((item, i) => (
+              <GalleryItem
+                key={i}
+                item={item}
+                i={i}
+                isMobile={isMobile}
+                onClick={() => setLightbox(i)}
+              />
+            ))}
+          </div>
+        )}
 
         {!galleryItems.some((item) => item.image_url) && (
           <p className="text-center text-xs mt-12 tracking-wider" style={{ color: "var(--c-text-muted)" }}>
@@ -113,25 +153,36 @@ export default function GallerySection({ galleryItems }) {
       <AnimatePresence>
         {lightbox !== null && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-6"
-            style={{ background: "rgba(0,0,0,0.95)", backdropFilter: "blur(20px)" }}
+            className={`fixed inset-0 z-50 flex items-center justify-center ${
+              isMobile ? "p-0" : "p-6"
+            }`}
+            style={{
+              background: "rgba(0,0,0,0.95)",
+              backdropFilter: isMobile ? "none" : "blur(20px)",
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setLightbox(null)}
           >
             <button
-              className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center"
+              className={`absolute z-10 flex items-center justify-center ${
+                isMobile
+                  ? "top-4 right-4 w-9 h-9"
+                  : "top-6 right-6 w-10 h-10"
+              }`}
               style={{ border: "1px solid rgba(255,255,255,0.1)" }}
-              onClick={() => setLightbox(null)}
+              onClick={(e) => { e.stopPropagation(); setLightbox(null); }}
             >
-              <X className="w-5 h-5 text-white/60" />
+              <X className={`${isMobile ? "w-4 h-4" : "w-5 h-5"} text-white/60`} />
             </button>
             <motion.div
-              className="w-full max-w-3xl overflow-hidden"
-              initial={{ scale: 0.9, opacity: 0 }}
+              className={`overflow-hidden ${
+                isMobile ? "w-full h-full flex flex-col" : "w-full max-w-3xl"
+              }`}
+              initial={{ scale: isMobile ? 0.95 : 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              exit={{ scale: isMobile ? 0.95 : 0.9, opacity: 0 }}
               transition={{ type: "spring", stiffness: 200, damping: 25 }}
               onClick={(e) => e.stopPropagation()}
             >
@@ -139,8 +190,13 @@ export default function GallerySection({ galleryItems }) {
                 <img
                   src={galleryItems[lightbox].image_url}
                   alt={galleryItems[lightbox].caption || ""}
-                  className="w-full"
-                  style={{ display: "block", maxHeight: "70vh", objectFit: "contain", background: "#000" }}
+                  className={`w-full ${isMobile ? "flex-1" : ""}`}
+                  style={{
+                    display: "block",
+                    maxHeight: isMobile ? "none" : "70vh",
+                    objectFit: isMobile ? "contain" : "contain",
+                    background: "#000",
+                  }}
                 />
               ) : (
                 <div
@@ -155,7 +211,10 @@ export default function GallerySection({ galleryItems }) {
                 />
               )}
               {galleryItems[lightbox].caption && (
-                <div className="p-5 text-center" style={{ background: "rgba(0,0,0,0.6)" }}>
+                <div
+                  className={`text-center ${isMobile ? "px-5 py-4" : "p-5"}`}
+                  style={{ background: "rgba(0,0,0,0.6)" }}
+                >
                   <p className="text-sm text-white/60" style={{ fontFamily: "var(--font-cn)" }}>
                     {galleryItems[lightbox].caption}
                   </p>

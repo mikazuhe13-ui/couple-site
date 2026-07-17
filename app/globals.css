@@ -214,3 +214,59 @@ input:focus, textarea:focus, select:focus {
   border-color: var(--c-gold) !important;
   box-shadow: 0 0 0 2px rgba(184, 162, 124, 0.15);
 }
+
+/* ══════════════════════════════════════════
+   Mobile Overrides
+   ══════════════════════════════════════════ */
+
+/* Disable film grain on mobile for performance */
+.mobile-site .grain-overlay::after {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+/* Hide letterbox bars on mobile — they waste precious viewport */
+.mobile-site .letterbox-top,
+.mobile-site .letterbox-bottom {
+  display: none;
+}
+
+/* Reduce blur transitions on mobile for snappier feel */
+.mobile-site .photo-reveal {
+  filter: blur(8px) brightness(0.85);
+  transition: filter 0.6s ease;
+}
+
+.mobile-site .photo-reveal.revealed {
+  filter: blur(0) brightness(1);
+}
+
+/* Hide custom scrollbar on mobile — use native */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 0;
+    display: none;
+  }
+
+  html {
+    scrollbar-width: none;
+  }
+
+  /* Reduce chapter number size on mobile */
+  .chapter-number {
+    font-size: clamp(4rem, 25vw, 8rem);
+  }
+
+  /* Disable fixed positioning tricks on mobile */
+  .letterbox-top,
+  .letterbox-bottom {
+    display: none;
+  }
+}
+
+/* Touch-friendly tap highlight */
+@media (pointer: coarse) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}

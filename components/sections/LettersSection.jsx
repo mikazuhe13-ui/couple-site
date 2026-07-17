@@ -8,7 +8,7 @@ export default function LettersSection({ loveLetters }) {
   const [activeLetter, setActiveLetter] = useState(0);
 
   return (
-    <section id="letters" className="relative py-28 md:py-40 px-6">
+    <section id="letters" className="relative py-16 md:py-40 px-5 md:px-6">
       <div className="max-w-2xl mx-auto">
         <SectionHeader enTitle="Love Letters" cnTitle="情书" />
 
@@ -47,12 +47,12 @@ export default function LettersSection({ loveLetters }) {
           <AnimatePresence mode="wait">
             <motion.div
               key={activeLetter}
-              initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+              initial={{ opacity: 0, y: 15, filter: "blur(3px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -15, filter: "blur(4px)" }}
-              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+              exit={{ opacity: 0, y: -10, filter: "blur(2px)" }}
+              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
-              <h4 className="text-xl md:text-2xl mb-8 md:mb-12" style={{
+              <h4 className="text-lg md:text-2xl mb-6 md:mb-12" style={{
                 fontFamily: "var(--font-cn)",
                 fontWeight: 500,
                 color: "var(--c-warm)",
@@ -77,7 +77,7 @@ export default function LettersSection({ loveLetters }) {
         </div>
 
         {/* Bottom decorative line */}
-        <div className="mx-auto mt-16 md:mt-20" style={{ width: "40px", height: "1px", background: "var(--c-divider)" }} />
+        <div className="mx-auto mt-12 md:mt-20" style={{ width: "40px", height: "1px", background: "var(--c-divider)" }} />
       </div>
     </section>
   );

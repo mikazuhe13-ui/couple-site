@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { Heart, Menu, MessageCircle } from "lucide-react";
+import useIsMobile from "@/hooks/useIsMobile";
 
 /* ── Data ── */
 import {
@@ -21,6 +22,7 @@ import GallerySection from "@/components/sections/GallerySection";
 import LettersSection from "@/components/sections/LettersSection";
 
 export default function CoupleSite() {
+  const isMobile = useIsMobile();
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [menuOpen, setMenuOpen] = useState(false);
   const [ripples, setRipples] = useState([]);
@@ -67,6 +69,7 @@ export default function CoupleSite() {
     }
   };
 
+  /* ── Scroll-based parallax (desktop only) ── */
   const { scrollYProgress } = useScroll();
   const heroY = useTransform(scrollYProgress, [0, 0.25], [0, -150]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
@@ -94,8 +97,9 @@ export default function CoupleSite() {
     return () => clearInterval(id);
   }, [startDate]);
 
-  /* click ripple */
+  /* click ripple (desktop only) */
   const addRipple = (e) => {
+    if (isMobile) return;
     const id = Date.now();
     setRipples((prev) => [...prev, { id, x: e.clientX, y: e.clientY }]);
   };
@@ -118,46 +122,43 @@ export default function CoupleSite() {
   return (
     <div
       onClick={addRipple}
-      className="min-h-screen"
+      className={`min-h-screen ${isMobile ? "mobile-site" : ""}`}
       style={{
         fontFamily: "'Inter', 'Noto Serif SC', sans-serif",
         background: "var(--c-bg)",
         color: "var(--c-text)",
       }}
     >
-      {/* Film grain overlay */}
+      {/* Film grain overlay — reduced on mobile via CSS */}
       <div className="fixed inset-0 pointer-events-none z-0 grain-overlay" />
 
-      {/* click ripples */}
-      <AnimatePresence>
-        {ripples.map((r) => (
-          <Ripple key={r.id} {...r} onDone={() => removeRipple(r.id)} />
-        ))}
-      </AnimatePresence>
+      {/* click ripples — desktop only */}
+      {!isMobile && (
+        <AnimatePresence>
+          {ripples.map((r) => (
+            <Ripple key={r.id} {...r} onDone={() => removeRipple(r.id)} />
+          ))}
+        </AnimatePresence>
+      )}
 
       {/* ═══════════ NAVIGATION ═══════════ */}
       <motion.nav
-        className="fixed top-0 w-full z-50 px-6 py-4"
+        className="fixed top-0 w-full z-50 px-5 py-3.5 md:px-6 md:py-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 1.5 }}
+        transition={{ duration: 1, delay: isMobile ? 0.5 : 1.5 }}
         style={{
-          backdropFilter: scrolled ? "blur(20px) saturate(1.2)" : "blur(8px)",
-          background: scrolled ? "rgba(8,8,8,0.9)" : "transparent",
+          backdropFilter: scrolled ? "blur(16px) saturate(1.2)" : "blur(8px)",
+          background: scrolled ? "rgba(8,8,8,0.92)" : "transparent",
           borderBottom: scrolled ? "1px solid var(--c-divider)" : "1px solid transparent",
           transition: "background 0.5s, border-bottom 0.5s, backdrop-filter 0.5s",
         }}
       >
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <button onClick={() => scrollTo("hero")} className="flex items-center gap-2.5 group">
-            <motion.div
-              whileHover={{ scale: 1.15 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <Heart className="w-3.5 h-3.5 fill-current" style={{ color: "var(--c-rose)" }} />
-            </motion.div>
+          <button onClick={() => scrollTo("hero")} className="flex items-center gap-2 group">
+            <Heart className="w-3 h-3 fill-current" style={{ color: "var(--c-rose)" }} />
             <span
-              className="text-sm tracking-[0.2em] uppercase"
+              className="text-xs md:text-sm tracking-[0.2em] uppercase"
               style={{
                 fontFamily: "var(--font-display)",
                 fontWeight: 500,
@@ -200,30 +201,30 @@ export default function CoupleSite() {
         </div>
       </motion.nav>
 
-      {/* mobile menu */}
+      {/* mobile menu — chapter navigation only */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-8"
-            style={{ background: "rgba(8,8,8,0.97)", backdropFilter: "blur(30px)" }}
+            className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-7"
+            style={{ background: "rgba(8,8,8,0.97)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.25 }}
           >
             {navLinks.map(([id, label], i) => (
               <motion.button
                 key={id}
                 onClick={() => scrollTo(id)}
-                className="text-2xl tracking-wider"
+                className="text-xl tracking-wider"
                 style={{
                   fontFamily: "var(--font-cn)",
                   color: "var(--c-warm)",
                   fontWeight: 300,
                 }}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.06 }}
+                transition={{ delay: i * 0.05 }}
               >
                 {label}
               </motion.button>
@@ -233,7 +234,12 @@ export default function CoupleSite() {
       </AnimatePresence>
 
       {/* ═══════════ SECTIONS ═══════════ */}
-      <HeroSection scrollTo={scrollTo} heroY={heroY} heroOpacity={heroOpacity} />
+      <HeroSection
+        scrollTo={scrollTo}
+        heroY={isMobile ? undefined : heroY}
+        heroOpacity={isMobile ? undefined : heroOpacity}
+        isMobile={isMobile}
+      />
 
       <CountdownSection startDate={startDate} time={time} />
 
@@ -254,7 +260,7 @@ export default function CoupleSite() {
       {/* ═══════════ MESSAGE BOARD ═══════════ */}
       <section
         id="messages"
-        className="relative py-28 md:py-40 px-6"
+        className="relative py-20 md:py-40 px-5 md:px-6"
       >
         <div className="max-w-3xl mx-auto relative z-10">
           <motion.div
@@ -262,14 +268,14 @@ export default function CoupleSite() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={{
-              hidden: { opacity: 0, y: 30 },
+              hidden: { opacity: 0, y: 20 },
               visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
             }}
-            className="text-center mb-16 md:mb-24"
+            className="text-center mb-12 md:mb-24"
           >
-            <MessageCircle className="w-4 h-4 mx-auto mb-5" style={{ color: "var(--c-gold-dim)" }} />
+            <MessageCircle className="w-4 h-4 mx-auto mb-4" style={{ color: "var(--c-gold-dim)" }} />
             <h3
-              className="text-3xl md:text-5xl lg:text-6xl mb-3"
+              className="text-2xl md:text-5xl lg:text-6xl mb-2 md:mb-3"
               style={{
                 fontFamily: "var(--font-display)",
                 fontWeight: 500,
@@ -280,7 +286,7 @@ export default function CoupleSite() {
               Message Board
             </h3>
             <p
-              className="text-lg md:text-xl tracking-wider"
+              className="text-base md:text-xl tracking-wider"
               style={{
                 fontFamily: "var(--font-cn)",
                 color: "var(--c-text-secondary)",
@@ -295,7 +301,7 @@ export default function CoupleSite() {
       </section>
 
       {/* ═══════════ FOOTER ═══════════ */}
-      <footer className="relative py-20 px-6 text-center">
+      <footer className="relative py-16 md:py-20 px-6 text-center">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -303,14 +309,14 @@ export default function CoupleSite() {
           transition={{ duration: 1 }}
         >
           <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="h-px w-16" style={{ background: "linear-gradient(to right, transparent, var(--c-divider))" }} />
+            <div className="h-px w-12 md:w-16" style={{ background: "linear-gradient(to right, transparent, var(--c-divider))" }} />
             <motion.div
               animate={{ scale: [1, 1.15, 1] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
               <Heart className="w-3 h-3 fill-current" style={{ color: "var(--c-rose)" }} />
             </motion.div>
-            <div className="h-px w-16" style={{ background: "linear-gradient(to left, transparent, var(--c-divider))" }} />
+            <div className="h-px w-12 md:w-16" style={{ background: "linear-gradient(to left, transparent, var(--c-divider))" }} />
           </div>
           <p
             className="text-[10px] tracking-[0.3em] uppercase mb-2"

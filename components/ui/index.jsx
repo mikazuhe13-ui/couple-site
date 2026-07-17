@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Music, Send } from "lucide-react";
+import useIsMobile from "@/hooks/useIsMobile";
 
 /* ══════════════════════════════════════════
    Section Divider — thin gold line
@@ -26,24 +27,34 @@ export function SectionDivider() {
    Section Header — editorial typography
    ══════════════════════════════════════════ */
 export function SectionHeader({ enTitle, cnTitle }) {
+  const isMobile = useIsMobile();
+
   return (
     <motion.div
-      className="mb-16 md:mb-24"
+      className={`${isMobile ? "mb-10 px-5" : "mb-16 md:mb-24"}`}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-60px" }}
+      viewport={{ once: true, margin: isMobile ? "-30px" : "-60px" }}
       variants={{
         hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+        visible: {
+          opacity: 1,
+          transition: {
+            staggerChildren: 0.12,
+            delayChildren: isMobile ? 0.05 : 0.1,
+          },
+        },
       }}
     >
       <motion.h3
         variants={{
-          hidden: { opacity: 0, y: 25, filter: "blur(8px)" },
+          hidden: { opacity: 0, y: 20, filter: isMobile ? "blur(4px)" : "blur(8px)" },
           visible: { opacity: 1, y: 0, filter: "blur(0px)" },
         }}
-        transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="text-3xl md:text-5xl lg:text-6xl text-center"
+        transition={{ duration: isMobile ? 0.5 : 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className={`${
+          isMobile ? "text-2xl" : "text-3xl md:text-5xl lg:text-6xl"
+        } text-center`}
         style={{
           fontFamily: "var(--font-display)",
           fontWeight: 500,
@@ -55,11 +66,13 @@ export function SectionHeader({ enTitle, cnTitle }) {
       </motion.h3>
       <motion.p
         variants={{
-          hidden: { opacity: 0, y: 15, filter: "blur(4px)" },
+          hidden: { opacity: 0, y: 10, filter: isMobile ? "blur(2px)" : "blur(4px)" },
           visible: { opacity: 1, y: 0, filter: "blur(0px)" },
         }}
-        transition={{ duration: 0.6, delay: 0.15 }}
-        className="text-base md:text-lg tracking-wider text-center mt-4"
+        transition={{ duration: isMobile ? 0.4 : 0.6, delay: 0.1 }}
+        className={`${
+          isMobile ? "text-sm mt-2" : "text-base md:text-lg mt-4"
+        } tracking-wider text-center`}
         style={{
           fontFamily: "var(--font-cn)",
           color: "var(--c-text-secondary)",
@@ -73,7 +86,7 @@ export function SectionHeader({ enTitle, cnTitle }) {
 }
 
 /* ══════════════════════════════════════════
-   Click Ripple
+   Click Ripple (desktop only)
    ══════════════════════════════════════════ */
 export function Ripple({ x, y, onDone }) {
   return (
@@ -96,6 +109,7 @@ export function Ripple({ x, y, onDone }) {
 export function MusicToggle() {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!audioRef.current) {
@@ -123,21 +137,28 @@ export function MusicToggle() {
 
   return (
     <motion.button
-      className="fixed bottom-6 right-6 z-50 w-11 h-11 flex items-center justify-center"
+      className={`fixed z-50 flex items-center justify-center ${
+        isMobile
+          ? "bottom-4 right-4 w-10 h-10"
+          : "bottom-6 right-6 w-11 h-11"
+      }`}
       style={{
         background: "rgba(8,8,8,0.8)",
-        backdropFilter: "blur(12px)",
+        backdropFilter: isMobile ? "none" : "blur(12px)",
         border: "1px solid rgba(184,162,124,0.1)",
       }}
       whileHover={{ scale: 1.08, borderColor: "rgba(184,162,124,0.25)" }}
       whileTap={{ scale: 0.92 }}
       onClick={() => setPlaying(!playing)}
     >
-      <motion.div animate={{ rotate: playing ? 360 : 0 }} transition={{ duration: 4, repeat: playing ? Infinity : 0, ease: "linear" }}>
-        <Music className="w-4 h-4" style={{ color: "var(--c-gold-dim)" }} />
+      <motion.div
+        animate={{ rotate: playing ? 360 : 0 }}
+        transition={{ duration: 4, repeat: playing ? Infinity : 0, ease: "linear" }}
+      >
+        <Music className={`${isMobile ? "w-3.5 h-3.5" : "w-4 h-4"}`} style={{ color: "var(--c-gold-dim)" }} />
       </motion.div>
       {playing && (
-        <div className="absolute -bottom-1.5 flex gap-0.5">
+        <div className={`absolute ${isMobile ? "-bottom-1" : "-bottom-1.5"} flex gap-0.5`}>
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
@@ -159,6 +180,7 @@ export function MusicToggle() {
 export function MessageBoard({ messages, onAddMessage }) {
   const [name, setName] = useState("");
   const [text, setText] = useState("");
+  const isMobile = useIsMobile();
 
   const add = async () => {
     if (!text.trim()) return;
@@ -173,12 +195,88 @@ export function MessageBoard({ messages, onAddMessage }) {
     background: "rgba(255,255,255,0.03)",
     border: "1px solid var(--c-divider)",
     color: "var(--c-warm)",
-    padding: "12px 16px",
-    fontSize: 14,
+    fontSize: isMobile ? 13 : 14,
     fontFamily: "var(--font-cn)",
     outline: "none",
     transition: "border-color 0.3s",
   };
+
+  if (isMobile) {
+    return (
+      <div className="mx-auto">
+        <motion.div
+          style={{ borderTop: "1px solid var(--c-divider)" }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          {/* Mobile stacked input */}
+          <div className="flex flex-col gap-2.5 pt-8 mb-8">
+            <input
+              placeholder="你的名字"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              style={{ ...inputStyle, padding: "10px 14px", width: "100%" }}
+            />
+            <textarea
+              placeholder="写下你想说的话..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              rows={3}
+              style={{
+                ...inputStyle,
+                padding: "10px 14px",
+                width: "100%",
+                resize: "none",
+                lineHeight: 1.6,
+              }}
+            />
+            <motion.button
+              className="w-full py-3 flex items-center justify-center gap-2"
+              style={{
+                background: "transparent",
+                border: "1px solid var(--c-gold-dim)",
+              }}
+              whileTap={{ scale: 0.97 }}
+              onClick={add}
+            >
+              <Send className="w-3.5 h-3.5" style={{ color: "var(--c-gold)" }} />
+              <span
+                className="text-xs tracking-wider"
+                style={{ color: "var(--c-gold)", fontFamily: "var(--font-cn)" }}
+              >
+                发送留言
+              </span>
+            </motion.button>
+          </div>
+
+          {/* Messages */}
+          <div className="space-y-0 max-h-72 overflow-y-auto">
+            <AnimatePresence>
+              {messages.map((m, i) => (
+                <motion.div
+                  key={`${m.time}-${i}`}
+                  className="py-4"
+                  style={{ borderBottom: "1px solid rgba(184,162,124,0.06)" }}
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm" style={{ color: "var(--c-rose)", fontFamily: "var(--font-cn)" }}>{m.name}</span>
+                    <span className="text-[10px]" style={{ color: "var(--c-text-muted)" }}>{m.time || (m.created_at ? new Date(m.created_at).toLocaleString("zh-CN") : "刚刚")}</span>
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ color: "var(--c-text-secondary)", fontFamily: "var(--font-cn)" }}>{m.text}</p>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -192,20 +290,20 @@ export function MessageBoard({ messages, onAddMessage }) {
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
       >
-        {/* Input row */}
+        {/* Desktop inline input row */}
         <div className="flex gap-3 mb-10 pt-10">
           <input
             placeholder="你的名字"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            style={{ ...inputStyle, maxWidth: 130 }}
+            style={{ ...inputStyle, padding: "12px 16px", maxWidth: 130 }}
           />
           <input
             placeholder="写下你想说的话..."
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && add()}
-            style={{ ...inputStyle, flex: 1 }}
+            style={{ ...inputStyle, padding: "12px 16px", flex: 1 }}
           />
           <motion.button
             className="shrink-0 w-11 h-11 flex items-center justify-center self-center"

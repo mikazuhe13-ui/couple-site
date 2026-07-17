@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 
 export default function CountdownSection({ startDate, time }) {
   return (
-    <section id="timer" className="relative min-h-screen flex items-center justify-center py-28 md:py-40 px-6">
+    <section id="timer" className="relative min-h-screen flex items-center justify-center py-24 md:py-40 px-5 md:px-6">
       <div className="max-w-4xl mx-auto text-center">
         {/* Date */}
         <motion.p
-          className="text-[11px] tracking-[0.4em] uppercase mb-16 md:mb-24"
+          className="text-[10px] md:text-[11px] tracking-[0.35em] uppercase mb-12 md:mb-24"
           style={{
             fontFamily: "var(--font-sans)",
             color: "var(--c-warm-muted)",
@@ -24,12 +24,12 @@ export default function CountdownSection({ startDate, time }) {
 
         {/* Main count */}
         <motion.div
-          initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+          initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <p className="text-xs tracking-[0.3em] uppercase mb-6" style={{
+          <p className="text-[10px] md:text-xs tracking-[0.3em] uppercase mb-4 md:mb-6" style={{
             fontFamily: "var(--font-sans)",
             color: "var(--c-gold-dim)",
             fontWeight: 400,
@@ -37,7 +37,7 @@ export default function CountdownSection({ startDate, time }) {
             Days
           </p>
           <p
-            className="text-7xl sm:text-8xl md:text-[10rem] lg:text-[13rem] leading-none mb-6"
+            className="text-6xl sm:text-8xl md:text-[10rem] lg:text-[13rem] leading-none mb-4 md:mb-6"
             style={{
               fontFamily: "var(--font-display)",
               fontWeight: 500,
@@ -47,7 +47,7 @@ export default function CountdownSection({ startDate, time }) {
           >
             {time.days}
           </p>
-          <p className="text-sm md:text-base tracking-[0.15em]" style={{
+          <p className="text-xs md:text-base tracking-[0.12em]" style={{
             fontFamily: "var(--font-cn)",
             color: "var(--c-text-secondary)",
             fontWeight: 300,
@@ -60,8 +60,8 @@ export default function CountdownSection({ startDate, time }) {
 
         {/* Thin separator */}
         <motion.div
-          className="mx-auto my-14 md:my-20"
-          style={{ width: "60px", height: "1px", background: "var(--c-divider)" }}
+          className="mx-auto my-10 md:my-20"
+          style={{ width: "50px", height: "1px", background: "var(--c-divider)" }}
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
@@ -70,13 +70,13 @@ export default function CountdownSection({ startDate, time }) {
 
         {/* Hours · Minutes · Seconds */}
         <motion.div
-          className="flex items-center justify-center gap-8 sm:gap-16 md:gap-24"
+          className="flex items-center justify-center gap-6 sm:gap-16 md:gap-24"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={{
             hidden: {},
-            visible: { transition: { staggerChildren: 0.15, delayChildren: 0.2 } },
+            visible: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
           }}
         >
           {[
@@ -88,13 +88,13 @@ export default function CountdownSection({ startDate, time }) {
               key={item.label}
               className="text-center"
               variants={{
-                hidden: { opacity: 0, y: 20, filter: "blur(4px)" },
+                hidden: { opacity: 0, y: 15, filter: "blur(4px)" },
                 visible: { opacity: 1, y: 0, filter: "blur(0px)" },
               }}
               transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               <p
-                className="text-3xl sm:text-4xl md:text-5xl tabular-nums"
+                className="text-2xl sm:text-4xl md:text-5xl tabular-nums"
                 style={{
                   fontFamily: "var(--font-display)",
                   fontWeight: 400,
@@ -104,7 +104,7 @@ export default function CountdownSection({ startDate, time }) {
               >
                 {String(item.value).padStart(2, "0")}
               </p>
-              <p className="text-[10px] tracking-[0.3em] uppercase mt-3" style={{
+              <p className="text-[9px] md:text-[10px] tracking-[0.25em] uppercase mt-2 md:mt-3" style={{
                 fontFamily: "var(--font-sans)",
                 color: "var(--c-warm-muted)",
                 fontWeight: 400,

@@ -6,7 +6,7 @@ import { SectionHeader } from "@/components/ui";
 export default function DiarySection({ diaryEntries }) {
   if (!diaryEntries || diaryEntries.length === 0) {
     return (
-      <section id="diary" className="relative py-28 md:py-40 px-6">
+      <section id="diary" className="relative py-16 md:py-28 px-5 md:px-6">
         <div className="max-w-4xl mx-auto">
           <SectionHeader enTitle="Love Diary" cnTitle="恋爱日记" />
         </div>
@@ -15,7 +15,7 @@ export default function DiarySection({ diaryEntries }) {
   }
 
   return (
-    <section id="diary" className="relative py-28 md:py-40 px-6">
+    <section id="diary" className="relative py-16 md:py-28 px-5 md:px-6">
       <div className="max-w-4xl mx-auto">
         <SectionHeader enTitle="Love Diary" cnTitle="恋爱日记" />
 
@@ -23,11 +23,11 @@ export default function DiarySection({ diaryEntries }) {
           {diaryEntries.map((entry, i) => (
             <motion.article
               key={i}
-              className="py-10 md:py-14 grid grid-cols-1 md:grid-cols-[140px_1fr] gap-6 md:gap-16"
-              initial={{ opacity: 0, y: 30 }}
+              className="py-8 md:py-14 grid grid-cols-1 md:grid-cols-[140px_1fr] gap-4 md:gap-16"
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.8, delay: i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.6, delay: i * 0.05, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
               {/* Date + Tag */}
               <div className="md:border-r md:border-[var(--c-divider)] md:pr-8">
