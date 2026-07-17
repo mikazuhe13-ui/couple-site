@@ -1,12 +1,4 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
-import localFont from "next/font/local";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 export const metadata = {
   title: "Our Love Story | 我们的爱情故事",
@@ -16,15 +8,19 @@ export const metadata = {
 };
 
 export const viewport = {
-  themeColor: "#FFFBF7",
+  themeColor: "#FFFAF5",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="zh-CN" className={`${inter.variable}`}>
-      <body className="font-body">{children}</body>
+    <html lang="zh-CN">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
+      <body style={{ margin: 0, overflowX: "hidden" }}>{children}</body>
     </html>
   );
 }

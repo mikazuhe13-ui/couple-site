@@ -11,7 +11,7 @@ import {
 } from "@/lib/data";
 
 /* ── UI primitives ── */
-import { Ripple, WaveDivider, DarkToggle, MusicToggle, MessageBoard } from "@/components/ui";
+import { Ripple, SectionDivider, DarkToggle, MusicToggle, MessageBoard } from "@/components/ui";
 
 /* ── Sections ── */
 import HeroSection from "@/components/sections/HeroSection";
@@ -26,6 +26,7 @@ export default function CoupleSite() {
   const [dark, setDark] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [ripples, setRipples] = useState([]);
+  const [scrolled, setScrolled] = useState(false);
 
   /* ── API data state ── */
   const [startDate, setStartDate] = useState(FALLBACK_START);
@@ -71,8 +72,15 @@ export default function CoupleSite() {
   };
 
   const { scrollYProgress } = useScroll();
-  const heroY = useTransform(scrollYProgress, [0, 0.25], [0, -120]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.18], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 0.25], [0, -150]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+
+  /* scroll state for nav */
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   /* countdown */
   useEffect(() => {
@@ -103,66 +111,128 @@ export default function CoupleSite() {
     setMenuOpen(false);
   };
 
-  const navLinks = [["timer", "计时"], ["timeline", "时间线"], ["diary", "日记"], ["gallery", "相册"], ["letters", "情书"], ["messages", "留言"]];
+  const navLinks = [
+    ["timer", "计时"],
+    ["timeline", "时间线"],
+    ["diary", "日记"],
+    ["gallery", "相册"],
+    ["letters", "情书"],
+    ["messages", "留言"],
+  ];
 
   return (
     <div
       onClick={addRipple}
       className="min-h-screen transition-colors duration-700"
       style={{
-        fontFamily: "'Inter', 'Noto Sans SC', sans-serif",
-        background: dark ? "#13101A" : "#FFFBF7",
-        color: dark ? "#E8D5C4" : "#3D2B2B",
+        fontFamily: "'Inter', 'Noto Serif SC', sans-serif",
+        background: dark ? "var(--c-dark-bg)" : "var(--c-cream)",
+        color: dark ? "#E8D5C4" : "var(--c-text)",
       }}
     >
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap'); html { scroll-behavior: smooth; } ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: ${dark ? "#13101A" : "#FFFBF7"}; } ::-webkit-scrollbar-thumb { background: #D4A38B; border-radius: 3px; } ::selection { background: rgba(196,129,129,0.2); }`}</style>
-
       {/* click ripples */}
       <AnimatePresence>
-        {ripples.map((r) => <Ripple key={r.id} {...r} onDone={() => removeRipple(r.id)} />)}
+        {ripples.map((r) => (
+          <Ripple key={r.id} {...r} onDone={() => removeRipple(r.id)} />
+        ))}
       </AnimatePresence>
 
       {/* ═══════════ NAVIGATION ═══════════ */}
-      <nav className="fixed top-0 w-full z-50 px-6 py-4" style={{ backdropFilter: "blur(20px)", borderBottom: `1px solid ${dark ? "rgba(196,129,129,0.06)" : "rgba(196,129,129,0.06)"}` }}>
+      <motion.nav
+        className="fixed top-0 w-full z-50 px-6 py-4"
+        style={{
+          backdropFilter: scrolled ? "blur(24px) saturate(1.4)" : "blur(8px)",
+          background: scrolled
+            ? (dark ? "rgba(26,18,24,0.85)" : "rgba(255,250,245,0.85)")
+            : "transparent",
+          borderBottom: scrolled
+            ? `1px solid ${dark ? "rgba(194,146,138,0.06)" : "rgba(194,146,138,0.06)"}`
+            : "1px solid transparent",
+          transition: "background 0.4s, border-bottom 0.4s, backdrop-filter 0.4s",
+        }}
+      >
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <button onClick={() => scrollTo("hero")} className="flex items-center gap-2 group">
-            <motion.div whileHover={{ scale: 1.2, rotate: 15 }} transition={{ type: "spring", stiffness: 300 }}>
-              <Heart className="w-4 h-4 fill-current" style={{ color: "#C48181" }} />
+          <button onClick={() => scrollTo("hero")} className="flex items-center gap-2.5 group">
+            <motion.div
+              whileHover={{ scale: 1.2, rotate: 15 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Heart className="w-4 h-4 fill-current" style={{ color: "var(--c-rose)" }} />
             </motion.div>
-            <span className="text-lg tracking-widest" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: dark ? "#E8D5C4" : "#3D2B2B" }}>
-              OUR STORY
+            <span
+              className="text-base tracking-[0.2em] uppercase"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 500,
+                color: dark ? "#E8D5C4" : "var(--c-text)",
+                letterSpacing: "0.2em",
+              }}
+            >
+              Our Story
             </span>
           </button>
-          <div className="hidden md:flex items-center gap-6">
+
+          <div className="hidden md:flex items-center gap-7">
             {navLinks.map(([id, label]) => (
-              <motion.button key={id} onClick={() => scrollTo(id)} className="text-xs tracking-widest uppercase relative group py-1" style={{ color: dark ? "#9B8080" : "#9B7070" }}>
+              <motion.button
+                key={id}
+                onClick={() => scrollTo(id)}
+                className="text-[11px] tracking-[0.2em] uppercase relative group py-1"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  color: dark ? "#8B7878" : "var(--c-text-muted)",
+                  fontWeight: 500,
+                }}
+              >
                 {label}
-                <motion.div className="absolute bottom-0 left-0 right-0 h-px origin-left" style={{ background: "#C48181" }} initial={{ scaleX: 0 }} whileHover={{ scaleX: 1 }} transition={{ duration: 0.3 }} />
+                <motion.div
+                  className="absolute bottom-0 left-0 right-0 h-px origin-left"
+                  style={{ background: "var(--c-rose)" }}
+                  initial={{ scaleX: 0 }}
+                  whileHover={{ scaleX: 1 }}
+                  transition={{ duration: 0.3 }}
+                />
               </motion.button>
             ))}
             <DarkToggle dark={dark} setDark={setDark} />
           </div>
+
           <div className="flex md:hidden items-center gap-3">
             <DarkToggle dark={dark} setDark={setDark} />
             <motion.button whileTap={{ scale: 0.85 }} onClick={() => setMenuOpen(!menuOpen)}>
-              <Menu className="w-5 h-5" style={{ color: dark ? "#E8D5C4" : "#3D2B2B" }} />
+              <Menu className="w-5 h-5" style={{ color: dark ? "#E8D5C4" : "var(--c-text)" }} />
             </motion.button>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6"
-            style={{ background: dark ? "rgba(19,16,26,0.96)" : "rgba(255,251,247,0.96)", backdropFilter: "blur(24px)" }}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-7"
+            style={{
+              background: dark ? "rgba(26,18,24,0.97)" : "rgba(255,250,245,0.97)",
+              backdropFilter: "blur(30px)",
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
             {navLinks.map(([id, label], i) => (
-              <motion.button key={id} onClick={() => scrollTo(id)} className="text-2xl tracking-widest" style={{ fontFamily: "'Noto Serif SC', serif", color: dark ? "#E8D5C4" : "#3D2B2B" }}
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+              <motion.button
+                key={id}
+                onClick={() => scrollTo(id)}
+                className="text-2xl tracking-wider"
+                style={{
+                  fontFamily: "var(--font-cn)",
+                  color: dark ? "#E8D5C4" : "var(--c-text)",
+                  fontWeight: 300,
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.06 }}
               >
                 {label}
               </motion.button>
@@ -176,48 +246,116 @@ export default function CoupleSite() {
 
       <CountdownSection dark={dark} startDate={startDate} time={time} />
 
-      <WaveDivider dark={dark} />
+      <SectionDivider dark={dark} />
 
       <TimelineSection dark={dark} milestones={milestones} />
 
-      <WaveDivider flip dark={dark} />
+      <SectionDivider dark={dark} />
 
       <DiarySection dark={dark} diaryEntries={diaryEntries} />
 
-      <WaveDivider dark={dark} />
+      <SectionDivider dark={dark} />
 
       <GallerySection dark={dark} galleryItems={galleryItems} />
 
-      <WaveDivider flip dark={dark} />
+      <SectionDivider dark={dark} />
 
       <LettersSection dark={dark} loveLetters={loveLetters} />
 
-      <WaveDivider dark={dark} />
+      <SectionDivider dark={dark} />
 
       {/* ═══════════ MESSAGE BOARD ═══════════ */}
-      <section id="messages" className="py-24 md:py-32 px-6" style={{ background: dark ? "#13101A" : "linear-gradient(180deg, #FFF5F0 0%, #FFFBF7 100%)" }}>
-        <div className="max-w-3xl mx-auto">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }} className="text-center mb-16">
-            <MessageCircle className="w-4 h-4 mx-auto mb-4" style={{ color: "#D4A38B" }} />
-            <h3 className="text-3xl md:text-5xl mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, color: dark ? "#E8D5C4" : "#3D2B2B" }}>Message Board</h3>
-            <p className="text-xl" style={{ fontFamily: "'Noto Serif SC', serif", color: dark ? "#807070" : "#9B7070" }}>留言板</p>
+      <section
+        id="messages"
+        className="relative py-28 md:py-40 px-6 overflow-hidden"
+        style={{
+          background: dark
+            ? "linear-gradient(180deg, var(--c-dark-bg), #1E1520)"
+            : "linear-gradient(180deg, var(--c-cream), #FFF5F0)",
+        }}
+      >
+        <div className="max-w-3xl mx-auto relative z-10">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={{
+              hidden: { opacity: 0, y: 30 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.7 } },
+            }}
+            className="text-center mb-16 md:mb-24"
+          >
+            <MessageCircle className="w-5 h-5 mx-auto mb-5" style={{ color: "var(--c-gold)" }} />
+            <h3
+              className="text-3xl md:text-5xl lg:text-6xl mb-3"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 500,
+                color: dark ? "#E8D5C4" : "var(--c-text)",
+                letterSpacing: "0.02em",
+              }}
+            >
+              Message Board
+            </h3>
+            <p
+              className="text-lg md:text-xl tracking-wider"
+              style={{
+                fontFamily: "var(--font-cn)",
+                color: dark ? "#8B7878" : "var(--c-text-secondary)",
+                fontWeight: 300,
+              }}
+            >
+              留言板
+            </p>
           </motion.div>
           <MessageBoard dark={dark} messages={messages} onAddMessage={handleAddMessage} />
         </div>
       </section>
 
       {/* ═══════════ FOOTER ═══════════ */}
-      <footer className="py-16 px-6 text-center" style={{ background: dark ? "linear-gradient(180deg, #13101A, #1A1520)" : "linear-gradient(180deg, #FFFBF7, #FFF0ED)" }}>
-        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
-          <div className="flex items-center justify-center gap-3 mb-5">
-            <div className="h-px w-12" style={{ background: "linear-gradient(to right, transparent, #C48181)" }} />
-            <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>
-              <Heart className="w-4 h-4 fill-current" style={{ color: "#C48181" }} />
+      <footer
+        className="relative py-20 px-6 text-center overflow-hidden"
+        style={{
+          background: dark
+            ? "linear-gradient(180deg, #1E1520, #1A1218)"
+            : "linear-gradient(180deg, #FFF5F0, #FFFAF5)",
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+        >
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="h-px w-16" style={{ background: "linear-gradient(to right, transparent, var(--c-rose-light))" }} />
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Heart className="w-4 h-4 fill-current" style={{ color: "var(--c-rose)" }} />
             </motion.div>
-            <div className="h-px w-12" style={{ background: "linear-gradient(to left, transparent, #C48181)" }} />
+            <div className="h-px w-16" style={{ background: "linear-gradient(to left, transparent, var(--c-rose-light))" }} />
           </div>
-          <p className="text-xs tracking-widest" style={{ color: dark ? "#504040" : "#BFA0A0" }}>MADE WITH LOVE</p>
-          <p className="text-xs mt-2" style={{ color: dark ? "#403535" : "#D4C0C0" }}>{new Date().getFullYear()} · Our Love Story</p>
+          <p
+            className="text-[10px] tracking-[0.3em] uppercase mb-2"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              color: dark ? "#504040" : "var(--c-text-muted)",
+              fontWeight: 500,
+            }}
+          >
+            Made with Love
+          </p>
+          <p
+            className="text-xs"
+            style={{
+              color: dark ? "#3A2E2E" : "var(--c-text-muted)",
+              opacity: 0.6,
+            }}
+          >
+            {new Date().getFullYear()} · Our Love Story
+          </p>
         </motion.div>
       </footer>
 
