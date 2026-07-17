@@ -34,7 +34,8 @@ export default function GallerySection({ dark, galleryItems }) {
                 <div
                   className="transition-transform duration-700 group-hover:scale-110"
                   style={{
-                    background: item.image_url ? (dark ? "#2A2025" : "#F5F0EB") : item.gradient,
+                    backgroundColor: item.image_url ? (dark ? "#2A2025" : "#F5F0EB") : undefined,
+                    background: item.image_url ? undefined : item.gradient,
                     height: item.h || 240,
                     display: "flex",
                     alignItems: "center",
