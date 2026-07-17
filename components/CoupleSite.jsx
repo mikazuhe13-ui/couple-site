@@ -1,21 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   motion,
   AnimatePresence,
   useReducedMotion,
-  useScroll,
-  useTransform,
 } from "framer-motion";
 import { Heart, MessageCircle } from "lucide-react";
 import useIsMobile from "@/hooks/useIsMobile";
-
-/* ── Data ── */
-import {
-  FALLBACK_START, FALLBACK_DIARY,
-  FALLBACK_GALLERY, FALLBACK_LETTERS,
-} from "@/lib/data";
 
 /* ── UI primitives ── */
 import { Ripple, SectionDivider, MusicToggle, MessageBoard } from "@/components/ui";
@@ -28,35 +20,19 @@ import DiarySection from "@/components/sections/DiarySection";
 import GallerySection from "@/components/sections/GallerySection";
 import LettersSection from "@/components/sections/LettersSection";
 
-export default function CoupleSite() {
+export default function CoupleSite({ initialContent }) {
   const isMobile = useIsMobile();
   const shouldReduceMotion = useReducedMotion();
-  const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [ripples, setRipples] = useState([]);
 
-  /* ── API data state ── */
-  const [startDate, setStartDate] = useState(FALLBACK_START);
-  const [diaryEntries, setDiaryEntries] = useState(FALLBACK_DIARY);
-  const [galleryItems, setGalleryItems] = useState(FALLBACK_GALLERY);
-  const [loveLetters, setLoveLetters] = useState(FALLBACK_LETTERS);
-  const [messages, setMessages] = useState([]);
-
-  /* ── Fetch data from Supabase ── */
-  useEffect(() => {
-    fetch("/api/content")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.diary?.length) setDiaryEntries(d.diary);
-        if (d.gallery?.length) setGalleryItems(d.gallery);
-        if (d.letters?.length) setLoveLetters(d.letters);
-        if (d.messages?.length) setMessages(d.messages);
-        if (d.settings?.length) {
-          const sd = d.settings.find((s) => s.key === "start_date");
-          if (sd) setStartDate(new Date(sd.value));
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const {
+    startDate,
+    diaryEntries,
+    galleryItems,
+    loveLetters,
+    messages: initialMessages,
+  } = initialContent;
+  const [messages, setMessages] = useState(initialMessages);
 
   /* ── Add message ── */
   const handleAddMessage = async (msg) => {
@@ -78,27 +54,6 @@ export default function CoupleSite() {
       return { ok: false };
     }
   };
-
-  /* ── Scroll-based parallax (desktop only) ── */
-  const { scrollYProgress } = useScroll();
-  const heroY = useTransform(scrollYProgress, [0, 0.25], [0, -150]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-
-  /* countdown */
-  useEffect(() => {
-    const tick = () => {
-      const diff = new Date() - startDate;
-      setTime({
-        days: Math.floor(diff / 86400000),
-        hours: Math.floor((diff % 86400000) / 3600000),
-        minutes: Math.floor((diff % 3600000) / 60000),
-        seconds: Math.floor((diff % 60000) / 1000),
-      });
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [startDate]);
 
   /* click ripple (desktop only) */
   const addRipple = (e) => {
@@ -148,14 +103,9 @@ export default function CoupleSite() {
       <SiteNavigation links={navLinks} />
 
       {/* ═══════════ SECTIONS ═══════════ */}
-      <HeroSection
-        scrollTo={scrollTo}
-        heroY={isMobile ? undefined : heroY}
-        heroOpacity={isMobile ? undefined : heroOpacity}
-        isMobile={isMobile}
-      />
+      <HeroSection scrollTo={scrollTo} />
 
-      <CountdownSection startDate={startDate} time={time} />
+      <CountdownSection startDate={startDate} />
 
       <SectionDivider />
 

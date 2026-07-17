@@ -1,8 +1,32 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-export default function CountdownSection({ startDate, time }) {
+const EMPTY_TIME = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+
+function getElapsedTime(startDate) {
+  const diff = Math.max(0, Date.now() - new Date(startDate).getTime());
+  if (!Number.isFinite(diff)) return EMPTY_TIME;
+
+  return {
+    days: Math.floor(diff / 86400000),
+    hours: Math.floor((diff % 86400000) / 3600000),
+    minutes: Math.floor((diff % 3600000) / 60000),
+    seconds: Math.floor((diff % 60000) / 1000),
+  };
+}
+
+export default function CountdownSection({ startDate }) {
+  const [time, setTime] = useState(EMPTY_TIME);
+
+  useEffect(() => {
+    const tick = () => setTime(getElapsedTime(startDate));
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [startDate]);
+
   return (
     <section id="timer" className="relative min-h-screen flex items-center justify-center py-24 md:py-40 px-5 md:px-6">
       <div className="max-w-4xl mx-auto text-center">
@@ -19,7 +43,7 @@ export default function CountdownSection({ startDate, time }) {
           viewport={{ once: true }}
           transition={{ duration: 1.2, delay: 0.2 }}
         >
-          Since {startDate.toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })}
+          Since {new Date(startDate).toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })}
         </motion.p>
 
         {/* Main count */}
