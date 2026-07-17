@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Music, Send } from "lucide-react";
 import useIsMobile from "@/hooks/useIsMobile";
 
@@ -110,6 +110,7 @@ export function MusicToggle() {
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef(null);
   const isMobile = useIsMobile();
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (!audioRef.current) {
@@ -139,7 +140,7 @@ export function MusicToggle() {
     <motion.button
       className={`fixed z-50 flex items-center justify-center ${
         isMobile
-          ? "bottom-4 right-4 w-10 h-10"
+          ? "bottom-4 right-4 w-11 h-11"
           : "bottom-6 right-6 w-11 h-11"
       }`}
       style={{
@@ -150,10 +151,16 @@ export function MusicToggle() {
       whileHover={{ scale: 1.08, borderColor: "rgba(201,169,110,0.3)" }}
       whileTap={{ scale: 0.92 }}
       onClick={() => setPlaying(!playing)}
+      aria-label={playing ? "暂停背景音乐" : "播放背景音乐"}
+      aria-pressed={playing}
     >
       <motion.div
-        animate={{ rotate: playing ? 360 : 0 }}
-        transition={{ duration: 4, repeat: playing ? Infinity : 0, ease: "linear" }}
+        animate={{ rotate: playing && !shouldReduceMotion ? 360 : 0 }}
+        transition={{
+          duration: shouldReduceMotion ? 0 : 4,
+          repeat: playing && !shouldReduceMotion ? Infinity : 0,
+          ease: "linear",
+        }}
       >
         <Music className={`${isMobile ? "w-3.5 h-3.5" : "w-4 h-4"}`} style={{ color: "var(--c-gold-dim)" }} />
       </motion.div>
@@ -164,8 +171,14 @@ export function MusicToggle() {
               key={i}
               className="w-0.5 rounded-full"
               style={{ background: "var(--c-gold-dim)" }}
-              animate={{ height: [2, 6, 2] }}
-              transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
+              animate={{
+                height: shouldReduceMotion ? 2 : [2, 6, 2],
+              }}
+              transition={{
+                duration: shouldReduceMotion ? 0 : 0.6,
+                repeat: shouldReduceMotion ? 0 : Infinity,
+                delay: shouldReduceMotion ? 0 : i * 0.15,
+              }}
             />
           ))}
         </div>
@@ -180,15 +193,34 @@ export function MusicToggle() {
 export function MessageBoard({ messages, onAddMessage }) {
   const [name, setName] = useState("");
   const [text, setText] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState("");
   const isMobile = useIsMobile();
+  const statusId = "message-submit-status";
 
   const add = async () => {
-    if (!text.trim()) return;
-    if (onAddMessage) {
-      await onAddMessage({ name: name.trim() || "匿名", text });
+    if (!text.trim() || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitStatus("正在发送留言…");
+    try {
+      const result = onAddMessage
+        ? await onAddMessage({ name: name.trim() || "匿名", text })
+        : { ok: false };
+
+      if (!result?.ok) {
+        setSubmitStatus("留言暂时未发送，请稍后重试。");
+        return;
+      }
+
+      setText("");
+      setName("");
+      setSubmitStatus("留言已发送。");
+    } catch {
+      setSubmitStatus("留言暂时未发送，请稍后重试。");
+    } finally {
+      setIsSubmitting(false);
     }
-    setText("");
-    setName("");
   };
 
   const inputStyle = {
@@ -197,6 +229,7 @@ export function MessageBoard({ messages, onAddMessage }) {
     color: "var(--c-warm)",
     fontSize: isMobile ? 13 : 14,
     fontFamily: "var(--font-cn)",
+    minHeight: 44,
     outline: "none",
     transition: "border-color 0.3s",
   };
@@ -213,16 +246,26 @@ export function MessageBoard({ messages, onAddMessage }) {
         >
           {/* Mobile stacked input */}
           <div className="flex flex-col gap-2.5 pt-8 mb-8">
+            <label className="sr-only" htmlFor="message-name-mobile">
+              你的名字
+            </label>
             <input
+              id="message-name-mobile"
               placeholder="你的名字"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              aria-describedby={statusId}
               style={{ ...inputStyle, padding: "10px 14px", width: "100%" }}
             />
+            <label className="sr-only" htmlFor="message-text-mobile">
+              留言内容
+            </label>
             <textarea
+              id="message-text-mobile"
               placeholder="写下你想说的话..."
               value={text}
               onChange={(e) => setText(e.target.value)}
+              aria-describedby={statusId}
               rows={3}
               style={{
                 ...inputStyle,
@@ -233,22 +276,26 @@ export function MessageBoard({ messages, onAddMessage }) {
               }}
             />
             <motion.button
-              className="w-full py-3 flex items-center justify-center gap-2"
+              className="flex min-h-11 w-full items-center justify-center gap-2 py-3"
               style={{
                 background: "transparent",
                 border: "1px solid var(--c-gold-dim)",
               }}
               whileTap={{ scale: 0.97 }}
               onClick={add}
+              disabled={isSubmitting}
             >
               <Send className="w-3.5 h-3.5" style={{ color: "var(--c-gold)" }} />
               <span
                 className="text-xs tracking-wider"
                 style={{ color: "var(--c-gold)", fontFamily: "var(--font-cn)" }}
               >
-                发送留言
+                {isSubmitting ? "正在发送…" : "发送留言"}
               </span>
             </motion.button>
+            <p id={statusId} role="status" aria-live="polite" className="sr-only">
+              {submitStatus}
+            </p>
           </div>
 
           {/* Messages */}
@@ -292,17 +339,27 @@ export function MessageBoard({ messages, onAddMessage }) {
       >
         {/* Desktop inline input row */}
         <div className="flex gap-3 mb-10 pt-10">
+          <label className="sr-only" htmlFor="message-name-desktop">
+            你的名字
+          </label>
           <input
+            id="message-name-desktop"
             placeholder="你的名字"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            aria-describedby={statusId}
             style={{ ...inputStyle, padding: "12px 16px", maxWidth: 130 }}
           />
+          <label className="sr-only" htmlFor="message-text-desktop">
+            留言内容
+          </label>
           <input
+            id="message-text-desktop"
             placeholder="写下你想说的话..."
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && add()}
+            aria-describedby={statusId}
             style={{ ...inputStyle, padding: "12px 16px", flex: 1 }}
           />
           <motion.button
@@ -314,9 +371,14 @@ export function MessageBoard({ messages, onAddMessage }) {
             whileHover={{ borderColor: "var(--c-gold)", scale: 1.05 }}
             whileTap={{ scale: 0.9 }}
             onClick={add}
+            disabled={isSubmitting}
+            aria-label={isSubmitting ? "正在发送留言" : "发送留言"}
           >
             <Send className="w-4 h-4" style={{ color: "var(--c-gold)" }} />
           </motion.button>
+          <p id={statusId} role="status" aria-live="polite" className="sr-only">
+            {submitStatus}
+          </p>
         </div>
 
         {/* Messages */}

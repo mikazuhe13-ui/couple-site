@@ -1,8 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { Heart, Menu, MessageCircle } from "lucide-react";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import { Heart, MessageCircle } from "lucide-react";
 import useIsMobile from "@/hooks/useIsMobile";
 
 /* ── Data ── */
@@ -13,6 +19,7 @@ import {
 
 /* ── UI primitives ── */
 import { Ripple, SectionDivider, MusicToggle, MessageBoard } from "@/components/ui";
+import SiteNavigation from "@/components/navigation/SiteNavigation";
 
 /* ── Sections ── */
 import HeroSection from "@/components/sections/HeroSection";
@@ -23,10 +30,9 @@ import LettersSection from "@/components/sections/LettersSection";
 
 export default function CoupleSite() {
   const isMobile = useIsMobile();
+  const shouldReduceMotion = useReducedMotion();
   const [time, setTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [menuOpen, setMenuOpen] = useState(false);
   const [ripples, setRipples] = useState([]);
-  const [scrolled, setScrolled] = useState(false);
 
   /* ── API data state ── */
   const [startDate, setStartDate] = useState(FALLBACK_START);
@@ -63,9 +69,13 @@ export default function CoupleSite() {
       if (res.ok) {
         const saved = await res.json();
         setMessages((prev) => [saved, ...prev]);
+        return { ok: true };
       }
+
+      return { ok: false };
     } catch (e) {
       console.error("Message save error:", e);
+      return { ok: false };
     }
   };
 
@@ -73,13 +83,6 @@ export default function CoupleSite() {
   const { scrollYProgress } = useScroll();
   const heroY = useTransform(scrollYProgress, [0, 0.25], [0, -150]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-
-  /* scroll state for nav */
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   /* countdown */
   useEffect(() => {
@@ -107,16 +110,17 @@ export default function CoupleSite() {
 
   /* smooth scroll */
   const scrollTo = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    setMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({
+      behavior: shouldReduceMotion ? "auto" : "smooth",
+    });
   };
 
   const navLinks = [
-    ["timer", "计时"],
-    ["diary", "日记"],
-    ["gallery", "相册"],
-    ["letters", "情书"],
-    ["messages", "留言"],
+    { id: "timer", label: "计时" },
+    { id: "diary", label: "日记" },
+    { id: "gallery", label: "相册" },
+    { id: "letters", label: "情书" },
+    { id: "messages", label: "留言" },
   ];
 
   return (
@@ -141,97 +145,7 @@ export default function CoupleSite() {
         </AnimatePresence>
       )}
 
-      {/* ═══════════ NAVIGATION ═══════════ */}
-      <motion.nav
-        className="fixed top-0 w-full z-50 px-5 py-3.5 md:px-6 md:py-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: isMobile ? 0.5 : 1.5 }}
-        style={{
-          backdropFilter: scrolled ? "blur(20px) saturate(1.2)" : "blur(8px)",
-          background: scrolled ? "rgba(255,251,245,0.92)" : "transparent",
-          borderBottom: scrolled ? "1px solid var(--c-divider)" : "1px solid transparent",
-          transition: "background 0.5s, border-bottom 0.5s, backdrop-filter 0.5s",
-        }}
-      >
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <button onClick={() => scrollTo("hero")} className="flex items-center gap-2 group">
-            <Heart className="w-3 h-3 fill-current" style={{ color: "var(--c-rose)" }} />
-            <span
-              className="text-xs md:text-sm tracking-[0.2em] uppercase"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 500,
-                color: "var(--c-warm)",
-              }}
-            >
-              Our Story
-            </span>
-          </button>
-
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map(([id, label]) => (
-              <motion.button
-                key={id}
-                onClick={() => scrollTo(id)}
-                className="text-[10px] tracking-[0.25em] uppercase relative group py-1"
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  color: "var(--c-warm-muted)",
-                  fontWeight: 400,
-                }}
-              >
-                {label}
-                <motion.div
-                  className="absolute bottom-0 left-0 right-0 h-px origin-left"
-                  style={{ background: "var(--c-gold)" }}
-                  initial={{ scaleX: 0 }}
-                  whileHover={{ scaleX: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.button>
-            ))}
-          </div>
-
-          <div className="flex md:hidden items-center gap-3">
-            <motion.button whileTap={{ scale: 0.85 }} onClick={() => setMenuOpen(!menuOpen)}>
-              <Menu className="w-5 h-5" style={{ color: "var(--c-warm)" }} />
-            </motion.button>
-          </div>
-        </div>
-      </motion.nav>
-
-      {/* mobile menu — chapter navigation only */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-7"
-            style={{ background: "rgba(255,251,245,0.97)", backdropFilter: "blur(20px)" }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-          >
-            {navLinks.map(([id, label], i) => (
-              <motion.button
-                key={id}
-                onClick={() => scrollTo(id)}
-                className="text-xl tracking-wider"
-                style={{
-                  fontFamily: "var(--font-cn)",
-                  color: "var(--c-warm)",
-                  fontWeight: 300,
-                }}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-              >
-                {label}
-              </motion.button>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <SiteNavigation links={navLinks} />
 
       {/* ═══════════ SECTIONS ═══════════ */}
       <HeroSection
@@ -311,8 +225,14 @@ export default function CoupleSite() {
           <div className="flex items-center justify-center gap-4 mb-6">
             <div className="h-px w-12 md:w-16" style={{ background: "linear-gradient(to right, transparent, var(--c-divider))" }} />
             <motion.div
-              animate={{ scale: [1, 1.15, 1] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              animate={{
+                scale: shouldReduceMotion ? 1 : [1, 1.15, 1],
+              }}
+              transition={{
+                duration: shouldReduceMotion ? 0 : 3,
+                repeat: shouldReduceMotion ? 0 : Infinity,
+                ease: "easeInOut",
+              }}
             >
               <Heart className="w-3 h-3 fill-current" style={{ color: "var(--c-rose)" }} />
             </motion.div>
