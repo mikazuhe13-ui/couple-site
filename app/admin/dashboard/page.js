@@ -533,7 +533,7 @@ export default function AdminDashboard() {
               <Settings className="w-8 h-8 mx-auto mb-4" style={{ color: "#D4A38B" }} />
               <p className="text-sm mb-2" style={{ color: "#5C4040" }}>开始日期设置</p>
               <p className="text-xs" style={{ color: "#9B7070" }}>
-                请在 Supabase 的 settings 表中添加一条记录：key = "start_date", value = "2024-02-14"
+                请在 Supabase 的 settings 表中添加一条记录：key = "start_date", value = "2026-02-13"
               </p>
             </div>
           ) : items.length === 0 ? (
