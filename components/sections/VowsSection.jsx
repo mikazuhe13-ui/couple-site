@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
-import { SectionHeader } from "@/components/ui";
+import SectionHeader from "@/components/ui/SectionHeader";
 import useIsMobile from "@/hooks/useIsMobile";
 
 /* ══════════════════════════════════════════

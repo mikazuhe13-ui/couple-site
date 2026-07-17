@@ -126,11 +126,11 @@ export default function CoupleSite({ initialContent }) {
 
       <SectionDivider />
 
-      <LettersSection loveLetters={loveLetters} />
+      <VowsSection vows={vowsItems} />
 
       <SectionDivider />
 
-      <VowsSection vows={vowsItems} />
+      <LettersSection loveLetters={loveLetters} />
 
       <SectionDivider />
 
