@@ -46,7 +46,7 @@ export default function CountdownSection({ dark, startDate, time }) {
             fontWeight: 300,
             letterSpacing: "0.05em",
           }}>
-            在一起的第{" "}
+            相识的第{" "}
             <span style={{
               color: "var(--c-rose)",
               fontWeight: 600,
