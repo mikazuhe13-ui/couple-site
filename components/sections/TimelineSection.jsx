@@ -109,7 +109,7 @@ export default function TimelineSection({ dark, milestones }) {
                 </motion.div>
 
                 {/* Mobile card */}
-                <div className="md:hidden pl-16 w-full">
+                <div className="md:hidden pl-10 sm:pl-14 w-full">
                   <motion.div
                     className="rounded-2xl p-5"
                     style={{

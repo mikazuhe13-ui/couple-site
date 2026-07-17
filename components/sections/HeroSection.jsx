@@ -96,8 +96,8 @@ export default function HeroSection({ dark, scrollTo, heroY, heroOpacity }) {
       <motion.div
         className="absolute rounded-full"
         style={{
-          width: "60vw",
-          height: "60vw",
+          width: "clamp(200px, 60vw, 800px)",
+          height: "clamp(200px, 60vw, 800px)",
           top: "5%",
           right: "-15%",
           background: dark
@@ -113,8 +113,8 @@ export default function HeroSection({ dark, scrollTo, heroY, heroOpacity }) {
       <motion.div
         className="absolute rounded-full"
         style={{
-          width: "40vw",
-          height: "40vw",
+          width: "clamp(150px, 40vw, 500px)",
+          height: "clamp(150px, 40vw, 500px)",
           bottom: "5%",
           left: "-10%",
           background: dark
@@ -130,9 +130,9 @@ export default function HeroSection({ dark, scrollTo, heroY, heroOpacity }) {
       <motion.div className="relative z-10 text-center px-6" style={{ opacity: heroOpacity }}>
         <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.4, ease: [0.25, 0.46, 0.45, 0.94] }}>
           {/* decorative lines + heart */}
-          <div className="flex items-center justify-center gap-5 mb-12">
+          <div className="flex items-center justify-center gap-3 sm:gap-5 mb-6 sm:mb-12">
             <motion.div
-              className="h-px w-20"
+              className="h-px w-12 sm:w-20"
               style={{ background: "linear-gradient(to right, transparent, var(--c-gold-light))" }}
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
@@ -146,7 +146,7 @@ export default function HeroSection({ dark, scrollTo, heroY, heroOpacity }) {
               <Heart className="w-5 h-5 fill-current" style={{ color: "var(--c-rose)" }} />
             </motion.div>
             <motion.div
-              className="h-px w-20"
+              className="h-px w-12 sm:w-20"
               style={{ background: "linear-gradient(to left, transparent, var(--c-gold-light))" }}
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
@@ -156,7 +156,7 @@ export default function HeroSection({ dark, scrollTo, heroY, heroOpacity }) {
 
           {/* main title */}
           <motion.h1
-            className="text-6xl md:text-8xl lg:text-[10rem] leading-[0.9] mb-4"
+            className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] leading-[0.9] mb-2 sm:mb-4"
             style={{
               fontFamily: "var(--font-display)",
               fontWeight: 500,
@@ -174,7 +174,7 @@ export default function HeroSection({ dark, scrollTo, heroY, heroOpacity }) {
 
           {/* Chinese subtitle */}
           <motion.h2
-            className="text-2xl md:text-4xl lg:text-5xl mb-8"
+            className="text-xl sm:text-2xl md:text-4xl lg:text-5xl mb-4 sm:mb-8"
             style={{
               fontFamily: "var(--font-art)",
               color: dark ? "#B0A0A0" : "var(--c-text-secondary)",
@@ -190,7 +190,7 @@ export default function HeroSection({ dark, scrollTo, heroY, heroOpacity }) {
 
           {/* description */}
           <motion.p
-            className="text-sm md:text-base mb-16 max-w-sm mx-auto leading-loose"
+            className="text-sm md:text-base mb-8 sm:mb-16 max-w-sm mx-auto leading-loose"
             style={{
               fontFamily: "var(--font-cn)",
               color: dark ? "#8B7878" : "var(--c-text-muted)",

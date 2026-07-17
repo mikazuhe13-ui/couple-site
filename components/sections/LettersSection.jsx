@@ -54,7 +54,7 @@ export default function LettersSection({ dark, loveLetters }) {
 
           {/* letter card */}
           <div
-            className="rounded-3xl p-8 md:p-14 relative overflow-hidden"
+            className="rounded-3xl p-5 sm:p-8 md:p-14 relative overflow-hidden"
             style={{
               background: dark
                 ? "linear-gradient(145deg, rgba(30,22,28,0.7), rgba(25,18,24,0.5))"
@@ -96,7 +96,7 @@ export default function LettersSection({ dark, loveLetters }) {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
-                <h4 className="text-xl md:text-2xl mb-8 relative z-10" style={{
+                <h4 className="text-xl md:text-2xl mb-4 sm:mb-8 relative z-10" style={{
                   fontFamily: "var(--font-cn)",
                   fontWeight: 600,
                   color: dark ? "#E8D5C4" : "var(--c-text)",
@@ -109,7 +109,7 @@ export default function LettersSection({ dark, loveLetters }) {
                   style={{
                     fontFamily: "var(--font-cn)",
                     color: dark ? "#B0A0A0" : "var(--c-text-secondary)",
-                    lineHeight: 2.2,
+                    lineHeight: 1.9,
                     fontWeight: 300,
                     letterSpacing: "0.02em",
                   }}
