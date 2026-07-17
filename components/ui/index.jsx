@@ -290,6 +290,41 @@ export function SectionHeader({ icon: Icon, enTitle, cnTitle, dark }) {
    ══════════════════════════════════════════ */
 export function MusicToggle({ dark }) {
   const [playing, setPlaying] = useState(false);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    // Create audio instance once
+    if (!audioRef.current) {
+      audioRef.current = new Audio("/bgm.mp3");
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.5;
+    }
+    const audio = audioRef.current;
+
+    if (playing) {
+      audio.play().catch(() => {
+        // Browser blocked autoplay, reset state
+        setPlaying(false);
+      });
+    } else {
+      audio.pause();
+    }
+
+    return () => {
+      // Don't pause on every re-render, only on unmount
+    };
+  }, [playing]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <motion.button
       className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full flex items-center justify-center"
