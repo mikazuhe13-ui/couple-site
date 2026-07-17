@@ -106,34 +106,9 @@ export function Ripple({ x, y, onDone }) {
 /* ══════════════════════════════════════════
    Music Toggle — minimal floating control
    ══════════════════════════════════════════ */
-export function MusicToggle() {
-  const [playing, setPlaying] = useState(false);
-  const audioRef = useRef(null);
+export function MusicToggle({ playing: extPlaying, onToggle }) {
+  const playing = extPlaying ?? false;
   const isMobile = useIsMobile();
-
-  useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio("/bgm.mp3");
-      audioRef.current.loop = true;
-      audioRef.current.volume = 0.5;
-    }
-    const audio = audioRef.current;
-
-    if (playing) {
-      audio.play().catch(() => setPlaying(false));
-    } else {
-      audio.pause();
-    }
-  }, [playing]);
-
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
 
   return (
     <motion.button
@@ -150,16 +125,16 @@ export function MusicToggle() {
       }}
       whileHover={{ scale: 1.08, borderColor: "rgba(201,169,110,0.35)" }}
       whileTap={{ scale: 0.92 }}
-      onClick={() => setPlaying(!playing)}
+      onClick={onToggle}
     >
       <motion.div
         animate={{ rotate: playing ? 360 : 0 }}
         transition={{ duration: 4, repeat: playing ? Infinity : 0, ease: "linear" }}
       >
-        <Music className={`${isMobile ? "w-4 h-4" : "w-4 h-4"}`} style={{ color: "var(--c-gold-dim)" }} />
+        <Music className="w-4 h-4" style={{ color: "var(--c-gold-dim)" }} />
       </motion.div>
       {playing && (
-        <div className={`absolute ${isMobile ? "-bottom-1.5" : "-bottom-1.5"} flex gap-0.5`}>
+        <div className="-bottom-1.5 absolute flex gap-0.5">
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}

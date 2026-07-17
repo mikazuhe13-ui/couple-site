@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { Heart, Menu, MessageCircle } from "lucide-react";
 import useIsMobile from "@/hooks/useIsMobile";
+import Sakura from "@/components/effects/Sakura";
 
 /* ── Data ── */
 import {
@@ -84,6 +85,51 @@ export default function CoupleSite() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  /* ── Autoplay music ── */
+  const audioRef = useRef(null);
+  const autoplayRef = useRef(false);
+  const [musicPlaying, setMusicPlaying] = useState(false);
+
+  useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio("/bgm.mp3");
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0;
+    }
+    const audio = audioRef.current;
+    if (musicPlaying) {
+      audio.play().catch(() => setMusicPlaying(false));
+      let vol = audio.volume;
+      const fade = setInterval(() => {
+        vol = Math.min(vol + 0.05, 0.5);
+        audio.volume = vol;
+        if (vol >= 0.5) clearInterval(fade);
+      }, 80);
+    } else {
+      audio.pause();
+    }
+  }, [musicPlaying]);
+
+  useEffect(() => {
+    const tryAutoplay = () => {
+      if (autoplayRef.current) return;
+      autoplayRef.current = true;
+      setMusicPlaying(true);
+    };
+    const events = ["click", "touchstart", "keydown"];
+    events.forEach((e) => document.addEventListener(e, tryAutoplay, { once: true }));
+    return () => events.forEach((e) => document.removeEventListener(e, tryAutoplay));
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
   /* countdown */
   useEffect(() => {
     const tick = () => {
@@ -135,6 +181,9 @@ export default function CoupleSite() {
     >
       {/* Film grain overlay — very subtle warm texture */}
       <div className="fixed inset-0 pointer-events-none z-0 grain-overlay" />
+
+      {/* Sakura petals — fades in after hero */}
+      <Sakura />
 
       {/* click ripples — desktop only */}
       {!isMobile && (
@@ -364,7 +413,7 @@ export default function CoupleSite() {
         </motion.div>
       </footer>
 
-      <MusicToggle />
+      <MusicToggle playing={musicPlaying} onToggle={() => setMusicPlaying((p) => !p)} />
     </div>
   );
 }
