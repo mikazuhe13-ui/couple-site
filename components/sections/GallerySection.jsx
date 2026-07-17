@@ -267,7 +267,7 @@ export default function GallerySection({ galleryItems }) {
             <button
               className={`absolute z-10 flex items-center justify-center ${
                 isMobile
-                  ? "top-4 right-4 w-9 h-9"
+                  ? "top-4 right-4 w-11 h-11"
                   : "top-6 right-6 w-10 h-10"
               }`}
               style={{ border: "1px solid rgba(61,43,43,0.15)" }}

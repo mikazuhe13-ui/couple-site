@@ -197,8 +197,12 @@ export default function CoupleSite() {
             ))}
           </div>
 
-          <div className="flex md:hidden items-center gap-3">
-            <motion.button whileTap={{ scale: 0.85 }} onClick={() => setMenuOpen(!menuOpen)}>
+          <div className="flex md:hidden items-center">
+            <motion.button
+              className="p-2 -mr-2"
+              whileTap={{ scale: 0.85 }}
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
               <Menu className="w-5 h-5" style={{ color: "var(--c-warm)" }} />
             </motion.button>
           </div>
@@ -215,12 +219,24 @@ export default function CoupleSite() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
+            onClick={() => setMenuOpen(false)}
           >
+            {/* Close button */}
+            <motion.button
+              className="absolute top-4 right-5 p-2"
+              onClick={() => setMenuOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15 }}
+            >
+              <span className="text-2xl" style={{ color: "var(--c-warm)", fontWeight: 300 }}>×</span>
+            </motion.button>
+
             {navLinks.map(([id, label], i) => (
               <motion.button
                 key={id}
-                onClick={() => scrollTo(id)}
-                className="text-xl tracking-wider"
+                onClick={(e) => { e.stopPropagation(); scrollTo(id); }}
+                className="text-xl tracking-wider py-3 px-6"
                 style={{
                   fontFamily: "var(--font-cn)",
                   color: "var(--c-warm)",

@@ -139,15 +139,16 @@ export function MusicToggle() {
     <motion.button
       className={`fixed z-50 flex items-center justify-center ${
         isMobile
-          ? "bottom-4 right-4 w-10 h-10"
+          ? "bottom-20 right-4 w-12 h-12"
           : "bottom-6 right-6 w-11 h-11"
       }`}
       style={{
-        background: "rgba(255,255,255,0.85)",
-        backdropFilter: isMobile ? "none" : "blur(12px)",
-        border: "1px solid rgba(201,169,110,0.15)",
+        background: "rgba(255,255,255,0.9)",
+        backdropFilter: "blur(12px)",
+        border: "1px solid rgba(201,169,110,0.2)",
+        boxShadow: isMobile ? "0 4px 20px rgba(196,130,122,0.15)" : "0 2px 12px rgba(0,0,0,0.08)",
       }}
-      whileHover={{ scale: 1.08, borderColor: "rgba(201,169,110,0.3)" }}
+      whileHover={{ scale: 1.08, borderColor: "rgba(201,169,110,0.35)" }}
       whileTap={{ scale: 0.92 }}
       onClick={() => setPlaying(!playing)}
     >
@@ -155,10 +156,10 @@ export function MusicToggle() {
         animate={{ rotate: playing ? 360 : 0 }}
         transition={{ duration: 4, repeat: playing ? Infinity : 0, ease: "linear" }}
       >
-        <Music className={`${isMobile ? "w-3.5 h-3.5" : "w-4 h-4"}`} style={{ color: "var(--c-gold-dim)" }} />
+        <Music className={`${isMobile ? "w-4 h-4" : "w-4 h-4"}`} style={{ color: "var(--c-gold-dim)" }} />
       </motion.div>
       {playing && (
-        <div className={`absolute ${isMobile ? "-bottom-1" : "-bottom-1.5"} flex gap-0.5`}>
+        <div className={`absolute ${isMobile ? "-bottom-1.5" : "-bottom-1.5"} flex gap-0.5`}>
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}

@@ -31,14 +31,14 @@ export default function DiarySection({ diaryEntries }) {
             >
               {/* Date + Tag */}
               <div className="md:border-r md:border-[var(--c-divider)] md:pr-8">
-                <p className="text-[11px] tracking-[0.2em] uppercase mb-2" style={{
+                <p className="text-xs md:text-[11px] tracking-[0.2em] uppercase mb-2" style={{
                   color: "var(--c-gold)",
                   fontFamily: "var(--font-sans)",
                   fontWeight: 500,
                 }}>
                   {entry.date}
                 </p>
-                <p className="text-[10px] tracking-[0.15em] uppercase" style={{
+                <p className="text-[11px] md:text-[10px] tracking-[0.15em] uppercase" style={{
                   color: "var(--c-warm-muted)",
                   fontFamily: "var(--font-sans)",
                   fontWeight: 400,

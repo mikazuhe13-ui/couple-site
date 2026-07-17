@@ -13,12 +13,12 @@ export default function LettersSection({ loveLetters }) {
         <SectionHeader enTitle="Love Letters" cnTitle="情书" />
 
         {/* Letter selector */}
-        <div className="flex justify-center gap-6 mb-16 md:mb-20">
+        <div className="flex justify-center gap-6 mb-10 md:mb-20">
           {loveLetters.map((_, i) => (
             <button
               key={i}
               onClick={() => setActiveLetter(i)}
-              className="relative py-2"
+              className="relative py-3 px-2"
             >
               <span
                 className="text-xs tracking-[0.2em] uppercase transition-colors duration-500"

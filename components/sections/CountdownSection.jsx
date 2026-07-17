@@ -8,7 +8,7 @@ export default function CountdownSection({ startDate, time }) {
       <div className="max-w-4xl mx-auto text-center">
         {/* Date */}
         <motion.p
-          className="text-[10px] md:text-[11px] tracking-[0.35em] uppercase mb-12 md:mb-24"
+          className="text-xs md:text-[11px] tracking-[0.35em] uppercase mb-12 md:mb-24"
           style={{
             fontFamily: "var(--font-sans)",
             color: "var(--c-warm-muted)",
@@ -29,7 +29,7 @@ export default function CountdownSection({ startDate, time }) {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <p className="text-[10px] md:text-xs tracking-[0.3em] uppercase mb-4 md:mb-6" style={{
+          <p className="text-xs md:text-xs tracking-[0.3em] uppercase mb-4 md:mb-6" style={{
             fontFamily: "var(--font-sans)",
             color: "var(--c-gold-dim)",
             fontWeight: 400,
@@ -104,7 +104,7 @@ export default function CountdownSection({ startDate, time }) {
               >
                 {String(item.value).padStart(2, "0")}
               </p>
-              <p className="text-[9px] md:text-[10px] tracking-[0.25em] uppercase mt-2 md:mt-3" style={{
+              <p className="text-[11px] md:text-[10px] tracking-[0.25em] uppercase mt-2 md:mt-3" style={{
                 fontFamily: "var(--font-sans)",
                 color: "var(--c-warm-muted)",
                 fontWeight: 400,
