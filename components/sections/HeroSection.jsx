@@ -1,222 +1,213 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
-export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) {
+const EASE_OUT = [0.22, 1, 0.36, 1];
+
+export default function HeroSection({ scrollTo }) {
+  const sectionRef = useRef(null);
   const videoRef = useRef(null);
+  const heroVisibleRef = useRef(false);
+  const [canParallax, setCanParallax] = useState(false);
+  const [heroInView, setHeroInView] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const mediaY = useTransform(scrollYProgress, [0, 1], [0, 42]);
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, -22]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.78], [1, 0.88]);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const tryPlay = () => {
-      if (video.paused) {
-        video.play().catch(() => {});
-      }
+    const query = window.matchMedia(
+      "(min-width: 769px) and (hover: hover) and (pointer: fine)"
+    );
+    const connection = navigator.connection;
+    const updateParallax = () => {
+      setCanParallax(query.matches && !connection?.saveData);
     };
-
-    const handleInteraction = () => {
-      tryPlay();
-      document.removeEventListener("click", handleInteraction);
-      document.removeEventListener("scroll", handleInteraction);
-      document.removeEventListener("touchstart", handleInteraction);
-    };
-
-    const timer = setTimeout(tryPlay, 100);
-    document.addEventListener("click", handleInteraction);
-    document.addEventListener("scroll", handleInteraction);
-    document.addEventListener("touchstart", handleInteraction);
+    updateParallax();
+    query.addEventListener?.("change", updateParallax);
+    connection?.addEventListener?.("change", updateParallax);
 
     return () => {
-      clearTimeout(timer);
-      document.removeEventListener("click", handleInteraction);
-      document.removeEventListener("scroll", handleInteraction);
-      document.removeEventListener("touchstart", handleInteraction);
+      query.removeEventListener?.("change", updateParallax);
+      connection?.removeEventListener?.("change", updateParallax);
     };
   }, []);
 
-  /* ── Wrap content for optional parallax ── */
-  const VideoLayer = (
-    <div
-      className="absolute inset-0 overflow-hidden"
-      style={heroY ? { y: heroY } : undefined}
-    >
-      <video
-        ref={videoRef}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{
-          filter: "brightness(1.05) saturate(1.1) contrast(1.02)",
-          objectPosition: isMobile ? "center center" : undefined,
-        }}
-      >
-        <source
-          src={isMobile ? "/hero-bg-mobile.mp4" : "/hero-bg.mp4"}
-          type="video/mp4"
-        />
-        <source src="/hero-bg.mp4" type="video/mp4" />
-      </video>
-      {/* Warm dreamy overlay — bright & romantic */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: isMobile
-            ? "linear-gradient(180deg, rgba(255,251,245,0.12) 0%, rgba(255,245,235,0.04) 40%, rgba(255,248,240,0.06) 75%, rgba(255,251,245,0.18) 100%)"
-            : "linear-gradient(180deg, rgba(255,251,245,0.08) 0%, rgba(255,245,235,0.02) 40%, rgba(255,248,240,0.04) 80%, rgba(255,251,245,0.12) 100%)",
-        }}
-      />
-    </div>
-  );
+  useEffect(() => {
+    const section = sectionRef.current;
+    const video = videoRef.current;
+    if (!section || !video) return;
+
+    const reducedMotionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+    const connection = navigator.connection;
+    const playbackAllowed = () =>
+      !reducedMotionQuery.matches && !connection?.saveData;
+
+    const syncPlayback = () => {
+      const pageVisible = document.visibilityState === "visible";
+      if (playbackAllowed() && heroVisibleRef.current && pageVisible) {
+        video.play().catch(() => {
+          video.pause();
+        });
+      } else {
+        video.pause();
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        heroVisibleRef.current =
+          entry.isIntersecting && entry.intersectionRatio >= 0.2;
+        setHeroInView(heroVisibleRef.current);
+        syncPlayback();
+      },
+      { threshold: [0, 0.2, 0.6] }
+    );
+
+    if (!playbackAllowed()) {
+      video.pause();
+    }
+
+    observer.observe(section);
+    document.addEventListener("visibilitychange", syncPlayback);
+    reducedMotionQuery.addEventListener?.("change", syncPlayback);
+    connection?.addEventListener?.("change", syncPlayback);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", syncPlayback);
+      reducedMotionQuery.removeEventListener?.("change", syncPlayback);
+      connection?.removeEventListener?.("change", syncPlayback);
+      video.pause();
+    };
+  }, []);
+
+  const motionEnabled = !reduceMotion;
+  const parallaxActive = canParallax && motionEnabled && heroInView;
+  const reveal = (delay) => ({
+    initial: motionEnabled ? { opacity: 0, y: 18 } : false,
+    animate: { opacity: 1, y: 0 },
+    transition: {
+      duration: motionEnabled ? 0.9 : 0,
+      delay: motionEnabled ? delay : 0,
+      ease: EASE_OUT,
+    },
+  });
 
   return (
-    <section id="hero" className="relative min-h-[100svh] flex items-center justify-center overflow-hidden grain-overlay">
-      {/* Video background */}
-      {VideoLayer}
-
-      {/* Soft warm vignette */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: "radial-gradient(ellipse at center, transparent 55%, rgba(255,240,225,0.15) 100%)",
-        }}
-      />
-
-      {/* Content */}
+    <section
+      ref={sectionRef}
+      id="hero"
+      className={`relative min-h-[100svh] overflow-hidden grain-overlay ${
+        heroInView ? "hero-is-active" : ""
+      }`}
+    >
       <motion.div
-        className="relative z-10 text-center px-6"
-        style={heroOpacity ? { opacity: heroOpacity } : undefined}
+        className={`absolute -inset-y-12 inset-x-0 overflow-hidden ${
+          parallaxActive ? "will-change-transform" : ""
+        }`}
+        style={parallaxActive ? { y: mediaY } : undefined}
+        aria-hidden="true"
       >
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 2, delay: 0.3 }}>
-          {/* Top decorative line */}
-          <motion.div
-            className="mx-auto mb-8 sm:mb-14"
-            style={{ width: "clamp(40px, 10vw, 140px)", height: "1px" }}
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 1 }}
-            transition={{ duration: 1.8, delay: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
-            <div className="w-full h-full" style={{
-              background: "linear-gradient(90deg, transparent, #C4827A, transparent)",
-              opacity: 0.4,
-            }} />
-          </motion.div>
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          poster="/hero-poster.webp"
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+        >
+          <source src="/hero-bg.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,251,245,0.18)_0%,rgba(255,245,235,0.04)_38%,rgba(255,248,240,0.08)_72%,rgba(255,251,245,0.28)_100%)]" />
+      </motion.div>
 
-          {/* Names — main title, elegant romantic serif */}
-          <motion.h1
-            className="text-2xl sm:text-5xl md:text-7xl lg:text-8xl leading-tight mb-3 sm:mb-6"
-            style={{
-              fontFamily: "'Playfair Display', 'Noto Serif SC', serif",
-              fontWeight: 500,
-              color: "#C4827A",
-              letterSpacing: "0.15em",
-              textShadow: "0 2px 30px rgba(196,130,122,0.3), 0 0 60px rgba(255,220,200,0.15)",
-              marginTop: "-63vh",
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(255,240,225,0.22)_100%)]" />
+
+      <motion.div
+        className={`hero-content-grid relative z-10 px-5 text-center sm:px-8 ${
+          parallaxActive ? "will-change-transform" : ""
+        }`}
+        style={
+          parallaxActive ? { y: contentY, opacity: contentOpacity } : undefined
+        }
+      >
+        <motion.div className="self-end" {...reveal(0.15)}>
+          <div className="mx-auto h-px w-[clamp(3rem,10vw,8.75rem)] bg-[linear-gradient(90deg,transparent,var(--c-gold),transparent)] opacity-60" />
+        </motion.div>
+
+        <motion.h1 className="hero-title" {...reveal(0.28)}>
+          杜明洋{" "}
+          <motion.span
+            className="hero-title-mark mx-1.5 inline-block font-normal text-[var(--c-gold)] sm:mx-4"
+            initial={motionEnabled ? { opacity: 0, scale: 0.7 } : false}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: motionEnabled ? 0.65 : 0,
+              delay: motionEnabled ? 0.65 : 0,
+              ease: EASE_OUT,
             }}
-            initial={{ opacity: 0, filter: "blur(12px)", letterSpacing: "0.4em" }}
-            animate={{ opacity: 1, filter: "blur(0px)", letterSpacing: "0.12em" }}
-            transition={{ duration: 2.5, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            杜明洋{" "}
-            <motion.span
-              className="inline-block mx-1.5 sm:mx-4"
-              style={{ color: "#D4A0A0", fontWeight: 300 }}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 2.2, type: "spring", stiffness: 100 }}
-            >
-              ×
-            </motion.span>
-            {" "}陈柯嘉
-          </motion.h1>
+            ×
+          </motion.span>{" "}
+          陈柯嘉
+        </motion.h1>
 
-          {/* Tagline — romantic italic */}
-          <motion.p
-            className="text-xs sm:text-base md:text-lg mb-10 sm:mb-16"
-            style={{
-              fontFamily: "'Playfair Display', 'Georgia', serif",
-              fontStyle: "italic",
-              fontWeight: 400,
-              color: "#B8897E",
-              letterSpacing: "0.15em",
-              textShadow: "0 1px 15px rgba(184,137,126,0.25)",
-              marginTop: "19vh",
-            }}
-            initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1.5, delay: 2.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+        <motion.p className="hero-tagline" {...reveal(0.48)}>
+          Some stories are not meant to end.
+        </motion.p>
+
+        <motion.div {...reveal(0.68)}>
+          <motion.button
+            type="button"
+            onClick={() => scrollTo("timer")}
+            className="hero-cta group relative cursor-pointer px-7 py-3 sm:px-11 sm:py-3.5"
+            whileHover={
+              motionEnabled
+                ? {
+                    borderColor: "rgba(201, 169, 110, 0.78)",
+                    backgroundColor: "rgba(255, 251, 245, 0.82)",
+                    y: -2,
+                  }
+                : undefined
+            }
+            whileTap={motionEnabled ? { scale: 0.98 } : undefined}
           >
-            Some stories are not meant to end.
-          </motion.p>
+            <span className="font-[family-name:var(--font-cn)] text-[0.72rem] tracking-[0.28em] text-[var(--c-text-secondary)] sm:text-sm">
+              进入我们的故事
+            </span>
+          </motion.button>
+        </motion.div>
 
-          {/* CTA button — romantic elegant */}
+        <motion.div className="self-start pt-2 sm:pt-4" {...reveal(0.86)}>
+          <div className="mx-auto mb-5 h-px w-[clamp(3rem,10vw,8.75rem)] bg-[linear-gradient(90deg,transparent,var(--c-gold),transparent)] opacity-60" />
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 3.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-            style={{ marginTop: "16vh" }}
+            animate={parallaxActive ? { y: [0, 7, 0] } : { y: 0 }}
+            transition={
+              parallaxActive
+                ? { duration: 2.8, repeat: Infinity, ease: "easeInOut" }
+                : { duration: 0 }
+            }
           >
-            <motion.button
-              onClick={() => scrollTo("timer")}
-              className="group relative px-7 sm:px-12 py-3 sm:py-4 cursor-pointer"
-              style={{
-                border: "1px solid rgba(196, 130, 122, 0.35)",
-                background: "rgba(255,255,255,0.45)",
-                backdropFilter: "blur(10px)",
-              }}
-              whileHover={{
-                borderColor: "rgba(196, 130, 122, 0.55)",
-                background: "rgba(255,255,255,0.65)",
-                scale: 1.02,
-              }}
-              whileTap={{ scale: 0.97 }}
-            >
-              <span
-                className="text-[11px] sm:text-sm tracking-[0.3em]"
-                style={{
-                  fontFamily: "'Playfair Display', 'Noto Serif SC', serif",
-                  fontWeight: 400,
-                  fontStyle: "italic",
-                  color: "#B8897E",
-                }}
-              >
-                进入我们的故事
-              </span>
-            </motion.button>
-          </motion.div>
-
-          {/* Bottom decorative line */}
-          <motion.div
-            className="mx-auto mt-8 sm:mt-14"
-            style={{ width: "clamp(40px, 10vw, 140px)", height: "1px" }}
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 1 }}
-            transition={{ duration: 1.8, delay: 4.0, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
-            <div className="w-full h-full" style={{
-              background: "linear-gradient(90deg, transparent, #C4827A, transparent)",
-              opacity: 0.4,
-            }} />
-          </motion.div>
-
-          {/* Scroll hint */}
-          <motion.div
-            className="mt-6 sm:mt-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 5.0 }}
-          >
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <ChevronDown className="w-4 h-4 mx-auto" style={{ color: "var(--c-gold-dim)", opacity: 0.5 }} />
-            </motion.div>
+            <ChevronDown
+              className="mx-auto h-4 w-4 text-[var(--c-gold-dim)] opacity-60"
+              aria-hidden="true"
+            />
           </motion.div>
         </motion.div>
       </motion.div>
