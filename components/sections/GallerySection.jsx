@@ -76,9 +76,11 @@ export default function GallerySection({ dark, galleryItems }) {
           ))}
         </div>
 
-        <p className="text-center text-xs mt-10 tracking-wider" style={{ color: "var(--c-text-muted)" }}>
-          * 替换为你们的真实照片
-        </p>
+        {!galleryItems.some((item) => item.image_url) && (
+          <p className="text-center text-xs mt-10 tracking-wider" style={{ color: "var(--c-text-muted)" }}>
+            * 替换为你们的真实照片
+          </p>
+        )}
       </div>
 
       {/* Lightbox */}
