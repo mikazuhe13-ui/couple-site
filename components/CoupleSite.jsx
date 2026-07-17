@@ -129,7 +129,7 @@ export default function CoupleSite() {
         color: "var(--c-text)",
       }}
     >
-      {/* Film grain overlay — reduced on mobile via CSS */}
+      {/* Film grain overlay — very subtle warm texture */}
       <div className="fixed inset-0 pointer-events-none z-0 grain-overlay" />
 
       {/* click ripples — desktop only */}
@@ -148,8 +148,8 @@ export default function CoupleSite() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: isMobile ? 0.5 : 1.5 }}
         style={{
-          backdropFilter: scrolled ? "blur(16px) saturate(1.2)" : "blur(8px)",
-          background: scrolled ? "rgba(8,8,8,0.92)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px) saturate(1.2)" : "blur(8px)",
+          background: scrolled ? "rgba(255,251,245,0.92)" : "transparent",
           borderBottom: scrolled ? "1px solid var(--c-divider)" : "1px solid transparent",
           transition: "background 0.5s, border-bottom 0.5s, backdrop-filter 0.5s",
         }}
@@ -206,7 +206,7 @@ export default function CoupleSite() {
         {menuOpen && (
           <motion.div
             className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-7"
-            style={{ background: "rgba(8,8,8,0.97)" }}
+            style={{ background: "rgba(255,251,245,0.97)", backdropFilter: "blur(20px)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -332,7 +332,7 @@ export default function CoupleSite() {
             className="text-xs"
             style={{
               color: "var(--c-text-muted)",
-              opacity: 0.4,
+              opacity: 0.5,
             }}
           >
             {new Date().getFullYear()} · Our Love Story

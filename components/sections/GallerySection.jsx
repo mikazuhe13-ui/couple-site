@@ -49,8 +49,8 @@ function GalleryItem({ item, i, onClick, isMobile }) {
           filter: revealed
             ? "blur(0px) brightness(1)"
             : isMobile
-              ? "blur(10px) brightness(0.75)"
-              : "blur(20px) brightness(0.7)",
+              ? "blur(10px) brightness(1.1)"
+              : "blur(20px) brightness(1.15)",
           transform: revealed ? "scale(1)" : "scale(1.02)",
           height: isMobile ? mobileHeight : item.h || 240,
           transitionDuration: isMobile ? "800ms" : "1500ms",
@@ -74,7 +74,7 @@ function GalleryItem({ item, i, onClick, isMobile }) {
               style={{
                 background: item.gradient,
                 opacity: 0.4,
-                filter: "saturate(0.5) brightness(0.6)",
+                filter: "saturate(0.8) brightness(0.95)",
               }}
             />
           </div>
@@ -89,9 +89,9 @@ function GalleryItem({ item, i, onClick, isMobile }) {
               ? "opacity-100"
               : "opacity-0 group-hover:opacity-100"
           } transition-opacity duration-500`}
-          style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.7))" }}
+          style={{ background: "linear-gradient(transparent, rgba(60,40,30,0.55))" }}
         >
-          <p className="text-xs text-white/70" style={{ fontFamily: "var(--font-cn)" }}>
+          <p className="text-xs text-white/80" style={{ fontFamily: "var(--font-cn)" }}>
             {item.caption}
           </p>
         </div>
@@ -157,7 +157,7 @@ export default function GallerySection({ galleryItems }) {
               isMobile ? "p-0" : "p-6"
             }`}
             style={{
-              background: "rgba(0,0,0,0.95)",
+              background: "rgba(255,251,245,0.95)",
               backdropFilter: isMobile ? "none" : "blur(20px)",
             }}
             initial={{ opacity: 0 }}
@@ -171,10 +171,10 @@ export default function GallerySection({ galleryItems }) {
                   ? "top-4 right-4 w-9 h-9"
                   : "top-6 right-6 w-10 h-10"
               }`}
-              style={{ border: "1px solid rgba(255,255,255,0.1)" }}
+              style={{ border: "1px solid rgba(61,43,43,0.15)" }}
               onClick={(e) => { e.stopPropagation(); setLightbox(null); }}
             >
-              <X className={`${isMobile ? "w-4 h-4" : "w-5 h-5"} text-white/60`} />
+              <X className={`${isMobile ? "w-4 h-4" : "w-5 h-5"}`} style={{ color: "var(--c-warm-muted)" }} />
             </button>
             <motion.div
               className={`overflow-hidden ${
@@ -195,7 +195,7 @@ export default function GallerySection({ galleryItems }) {
                     display: "block",
                     maxHeight: isMobile ? "none" : "70vh",
                     objectFit: isMobile ? "contain" : "contain",
-                    background: "#000",
+                    background: "#FFFBF5",
                   }}
                 />
               ) : (
@@ -213,9 +213,9 @@ export default function GallerySection({ galleryItems }) {
               {galleryItems[lightbox].caption && (
                 <div
                   className={`text-center ${isMobile ? "px-5 py-4" : "p-5"}`}
-                  style={{ background: "rgba(0,0,0,0.6)" }}
+                  style={{ background: "rgba(255,240,230,0.6)" }}
                 >
-                  <p className="text-sm text-white/60" style={{ fontFamily: "var(--font-cn)" }}>
+                  <p className="text-sm" style={{ fontFamily: "var(--font-cn)", color: "var(--c-text-secondary)" }}>
                     {galleryItems[lightbox].caption}
                   </p>
                 </div>

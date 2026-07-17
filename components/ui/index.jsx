@@ -98,7 +98,7 @@ export function Ripple({ x, y, onDone }) {
       transition={{ duration: 0.6, ease: "easeOut" }}
       onAnimationComplete={onDone}
     >
-      <div className="w-8 h-8" style={{ border: "1px solid rgba(184,162,124,0.3)" }} />
+      <div className="w-8 h-8" style={{ border: "1px solid rgba(201,169,110,0.3)" }} />
     </motion.div>
   );
 }
@@ -143,11 +143,11 @@ export function MusicToggle() {
           : "bottom-6 right-6 w-11 h-11"
       }`}
       style={{
-        background: "rgba(8,8,8,0.8)",
+        background: "rgba(255,255,255,0.85)",
         backdropFilter: isMobile ? "none" : "blur(12px)",
-        border: "1px solid rgba(184,162,124,0.1)",
+        border: "1px solid rgba(201,169,110,0.15)",
       }}
-      whileHover={{ scale: 1.08, borderColor: "rgba(184,162,124,0.25)" }}
+      whileHover={{ scale: 1.08, borderColor: "rgba(201,169,110,0.3)" }}
       whileTap={{ scale: 0.92 }}
       onClick={() => setPlaying(!playing)}
     >
@@ -192,7 +192,7 @@ export function MessageBoard({ messages, onAddMessage }) {
   };
 
   const inputStyle = {
-    background: "rgba(255,255,255,0.03)",
+    background: "rgba(255,240,230,0.5)",
     border: "1px solid var(--c-divider)",
     color: "var(--c-warm)",
     fontSize: isMobile ? 13 : 14,
@@ -258,7 +258,7 @@ export function MessageBoard({ messages, onAddMessage }) {
                 <motion.div
                   key={`${m.time}-${i}`}
                   className="py-4"
-                  style={{ borderBottom: "1px solid rgba(184,162,124,0.06)" }}
+                  style={{ borderBottom: "1px solid rgba(180,150,120,0.12)" }}
                   initial={{ opacity: 0, y: -8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
@@ -326,7 +326,7 @@ export function MessageBoard({ messages, onAddMessage }) {
               <motion.div
                 key={`${m.time}-${i}`}
                 className="py-5"
-                style={{ borderBottom: "1px solid rgba(184,162,124,0.06)" }}
+                style={{ borderBottom: "1px solid rgba(180,150,120,0.12)" }}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}

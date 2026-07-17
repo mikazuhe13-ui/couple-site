@@ -52,8 +52,7 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover"
         style={{
-          filter: "brightness(0.3) saturate(0.7) contrast(1.1)",
-          /* On mobile, use object-position to crop vertical video better */
+          filter: "brightness(0.85) saturate(1.15) contrast(1.02)",
           objectPosition: isMobile ? "center center" : undefined,
         }}
       >
@@ -63,13 +62,13 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
         />
         <source src="/hero-bg.mp4" type="video/mp4" />
       </video>
-      {/* Dark overlay for text readability */}
+      {/* Warm dreamy overlay — bright & romantic */}
       <div
         className="absolute inset-0"
         style={{
           background: isMobile
-            ? "linear-gradient(180deg, rgba(8,8,8,0.7) 0%, rgba(8,8,8,0.35) 40%, rgba(8,8,8,0.5) 75%, rgba(8,8,8,0.95) 100%)"
-            : "linear-gradient(180deg, rgba(8,8,8,0.6) 0%, rgba(8,8,8,0.3) 40%, rgba(8,8,8,0.5) 80%, rgba(8,8,8,0.9) 100%)",
+            ? "linear-gradient(180deg, rgba(255,251,245,0.35) 0%, rgba(255,245,235,0.15) 40%, rgba(255,248,240,0.2) 75%, rgba(255,251,245,0.6) 100%)"
+            : "linear-gradient(180deg, rgba(255,251,245,0.3) 0%, rgba(255,245,235,0.1) 40%, rgba(255,248,240,0.15) 80%, rgba(255,251,245,0.5) 100%)",
         }}
       />
     </div>
@@ -80,13 +79,11 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
       {/* Video background */}
       {VideoLayer}
 
-      {/* Vignette */}
+      {/* Soft warm vignette */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: isMobile
-            ? "radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.6) 100%)"
-            : "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)",
+          background: "radial-gradient(ellipse at center, transparent 50%, rgba(255,240,225,0.4) 100%)",
         }}
       />
 
@@ -106,11 +103,11 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
           >
             <div className="w-full h-full" style={{
               background: "linear-gradient(90deg, transparent, var(--c-gold), transparent)",
-              opacity: 0.4,
+              opacity: 0.5,
             }} />
           </motion.div>
 
-          {/* Names — main cinematic title */}
+          {/* Names — main title */}
           <motion.h1
             className="text-2xl sm:text-5xl md:text-7xl lg:text-8xl leading-tight mb-3 sm:mb-6"
             style={{
@@ -118,6 +115,7 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
               fontWeight: 400,
               color: "var(--c-warm)",
               letterSpacing: "0.12em",
+              textShadow: "0 2px 20px rgba(255,240,220,0.5)",
             }}
             initial={{ opacity: 0, filter: "blur(12px)", letterSpacing: "0.4em" }}
             animate={{ opacity: 1, filter: "blur(0px)", letterSpacing: "0.12em" }}
@@ -136,7 +134,7 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
             {" "}陈柯嘉
           </motion.h1>
 
-          {/* Tagline — movie subtitle */}
+          {/* Tagline */}
           <motion.p
             className="text-xs sm:text-base md:text-lg mb-10 sm:mb-16"
             style={{
@@ -145,6 +143,7 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
               fontWeight: 400,
               color: "var(--c-warm-muted)",
               letterSpacing: "0.1em",
+              textShadow: "0 1px 10px rgba(255,240,220,0.4)",
             }}
             initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -163,12 +162,13 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
               onClick={() => scrollTo("timer")}
               className="group relative px-7 sm:px-12 py-3 sm:py-4 cursor-pointer"
               style={{
-                border: "1px solid rgba(184, 162, 124, 0.2)",
-                background: "rgba(184, 162, 124, 0.03)",
+                border: "1px solid rgba(201, 169, 110, 0.3)",
+                background: "rgba(255,255,255,0.5)",
+                backdropFilter: "blur(10px)",
               }}
               whileHover={{
-                borderColor: "rgba(184, 162, 124, 0.4)",
-                background: "rgba(184, 162, 124, 0.06)",
+                borderColor: "rgba(201, 169, 110, 0.5)",
+                background: "rgba(255,255,255,0.7)",
                 scale: 1.02,
               }}
               whileTap={{ scale: 0.97 }}
@@ -196,7 +196,7 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
           >
             <div className="w-full h-full" style={{
               background: "linear-gradient(90deg, transparent, var(--c-gold), transparent)",
-              opacity: 0.4,
+              opacity: 0.5,
             }} />
           </motion.div>
 
