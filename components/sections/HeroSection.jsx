@@ -116,7 +116,7 @@ export default function HeroSection({ scrollTo, heroY, heroOpacity, isMobile }) 
               color: "#C4827A",
               letterSpacing: "0.15em",
               textShadow: "0 2px 30px rgba(196,130,122,0.3), 0 0 60px rgba(255,220,200,0.15)",
-              marginTop: "-63vh",
+              marginTop: "-15vh",
             }}
             initial={{ opacity: 0, filter: "blur(12px)", letterSpacing: "0.4em" }}
             animate={{ opacity: 1, filter: "blur(0px)", letterSpacing: "0.12em" }}
