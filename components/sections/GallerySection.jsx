@@ -30,11 +30,11 @@ export default function GallerySection({ dark, galleryItems }) {
               transition={{ duration: 0.6, delay: i * 0.06 }}
               whileHover={{ scale: 1.02 }}
             >
-              <div className="relative overflow-hidden rounded-2xl">
+              <div className="relative overflow-hidden rounded-2xl" style={{ background: dark ? "#2A2025" : "#F5F0EB" }}>
                 <div
                   className="transition-transform duration-700 group-hover:scale-110"
                   style={{
-                    background: item.image_url ? undefined : item.gradient,
+                    background: item.image_url ? (dark ? "#2A2025" : "#F5F0EB") : item.gradient,
                     height: item.h || 240,
                     display: "flex",
                     alignItems: "center",
