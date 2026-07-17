@@ -10,7 +10,9 @@ import { Heart, MessageCircle } from "lucide-react";
 import useIsMobile from "@/hooks/useIsMobile";
 
 /* ── UI primitives ── */
-import { Ripple, SectionDivider, MusicToggle, MessageBoard } from "@/components/ui";
+import { Ripple, SectionDivider } from "@/components/ui";
+import MessageBoard from "@/components/ui/MessageBoard";
+import MusicToggle from "@/components/ui/MusicToggle";
 import SiteNavigation from "@/components/navigation/SiteNavigation";
 
 /* ── Sections ── */

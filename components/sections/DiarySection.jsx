@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { SectionHeader } from "@/components/ui";
+import SectionHeader from "@/components/ui/SectionHeader";
 
 export default function DiarySection({ diaryEntries }) {
   if (!diaryEntries || diaryEntries.length === 0) {

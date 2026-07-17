@@ -28,11 +28,11 @@ export default function CountdownSection({ startDate }) {
   }, [startDate]);
 
   return (
-    <section id="timer" className="relative min-h-screen flex items-center justify-center py-24 md:py-40 px-5 md:px-6">
+    <section id="timer" className="relative min-h-screen flex items-center justify-center py-16 sm:py-24 md:py-40 px-5 md:px-6">
       <div className="max-w-4xl mx-auto text-center">
         {/* Date */}
         <motion.p
-          className="text-[10px] md:text-[11px] tracking-[0.35em] uppercase mb-12 md:mb-24"
+          className="text-[10px] md:text-[11px] tracking-[0.35em] uppercase mb-8 md:mb-24"
           style={{
             fontFamily: "var(--font-sans)",
             color: "var(--c-warm-muted)",

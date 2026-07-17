@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SectionHeader } from "@/components/ui";
+import SectionHeader from "@/components/ui/SectionHeader";
 
 export default function LettersSection({ loveLetters }) {
   const [activeLetter, setActiveLetter] = useState(0);
 
   return (
-    <section id="letters" className="relative py-16 md:py-40 px-5 md:px-6">
+    <section id="letters" className="relative py-16 sm:py-24 md:py-40 px-5 md:px-6">
       <div className="max-w-2xl mx-auto">
         <SectionHeader enTitle="Love Letters" cnTitle="情书" />
 
@@ -43,7 +43,7 @@ export default function LettersSection({ loveLetters }) {
         </div>
 
         {/* Letter content */}
-        <div className="relative min-h-[300px]">
+        <div className="relative min-h-[200px] sm:min-h-[260px] md:min-h-[300px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeLetter}

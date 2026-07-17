@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { SectionHeader } from "@/components/ui";
+import SectionHeader from "@/components/ui/SectionHeader";
 import useIsMobile from "@/hooks/useIsMobile";
 import GalleryLightbox from "@/components/gallery/GalleryLightbox";
 import MobileGalleryRail from "@/components/gallery/MobileGalleryRail";

@@ -87,12 +87,29 @@ body {
 
 @media (max-width: 640px) {
   .hero-content-grid {
-    grid-template-rows: minmax(4rem, 1fr) auto auto auto minmax(3.5rem, 0.9fr);
-    row-gap: clamp(0.75rem, 2.2svh, 1.2rem);
+    grid-template-rows: minmax(3rem, 0.8fr) auto auto auto minmax(2.5rem, 0.7fr);
+    row-gap: clamp(0.6rem, 2svh, 1rem);
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
   .hero-title {
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
+  }
+
+  .hero-tagline {
+    font-size: clamp(0.7rem, 3.2vw, 0.9rem);
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-content-grid {
+    grid-template-rows: minmax(2.5rem, 0.6fr) auto auto auto minmax(2rem, 0.5fr);
+    row-gap: 0.5rem;
+  }
+
+  .hero-title {
+    font-size: clamp(1.4rem, 8vw, 2rem);
+    letter-spacing: 0.04em;
   }
 }
 
@@ -313,7 +330,7 @@ button:disabled {
 }
 
 /* Hide custom scrollbar on mobile */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   ::-webkit-scrollbar {
     width: 0;
     display: none;
