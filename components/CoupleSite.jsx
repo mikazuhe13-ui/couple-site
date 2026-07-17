@@ -8,7 +8,7 @@ import useIsMobile from "@/hooks/useIsMobile";
 /* ── Data ── */
 import {
   FALLBACK_START, FALLBACK_DIARY,
-  FALLBACK_GALLERY, FALLBACK_LETTERS,
+  FALLBACK_GALLERY, FALLBACK_LETTERS, FALLBACK_VOWS,
 } from "@/lib/data";
 
 /* ── UI primitives ── */
@@ -20,6 +20,7 @@ import CountdownSection from "@/components/sections/CountdownSection";
 import DiarySection from "@/components/sections/DiarySection";
 import GallerySection from "@/components/sections/GallerySection";
 import LettersSection from "@/components/sections/LettersSection";
+import VowsSection from "@/components/sections/VowsSection";
 
 export default function CoupleSite() {
   const isMobile = useIsMobile();
@@ -33,6 +34,7 @@ export default function CoupleSite() {
   const [diaryEntries, setDiaryEntries] = useState(FALLBACK_DIARY);
   const [galleryItems, setGalleryItems] = useState(FALLBACK_GALLERY);
   const [loveLetters, setLoveLetters] = useState(FALLBACK_LETTERS);
+  const [vowsItems, setVowsItems] = useState(FALLBACK_VOWS);
   const [messages, setMessages] = useState([]);
 
   /* ── Fetch data from Supabase ── */
@@ -43,6 +45,7 @@ export default function CoupleSite() {
         if (d.diary?.length) setDiaryEntries(d.diary);
         if (d.gallery?.length) setGalleryItems([...d.gallery, ...FALLBACK_GALLERY]);
         if (d.letters?.length) setLoveLetters(d.letters);
+        if (d.vows?.length) setVowsItems([...d.vows, ...FALLBACK_VOWS]);
         if (d.messages?.length) setMessages(d.messages);
         if (d.settings?.length) {
           const sd = d.settings.find((s) => s.key === "start_date");
@@ -115,6 +118,7 @@ export default function CoupleSite() {
     ["timer", "计时"],
     ["diary", "日记"],
     ["gallery", "相册"],
+    ["vows", "誓言"],
     ["letters", "情书"],
     ["messages", "留言"],
   ];
@@ -254,6 +258,10 @@ export default function CoupleSite() {
       <SectionDivider />
 
       <LettersSection loveLetters={loveLetters} />
+
+      <SectionDivider />
+
+      <VowsSection vows={vowsItems} />
 
       <SectionDivider />
 
