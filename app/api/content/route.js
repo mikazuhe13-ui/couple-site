@@ -1,5 +1,42 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { isAdminRequest } from "@/lib/admin-auth";
+
+const CONTENT_TYPES = new Set([
+  "milestones",
+  "diary",
+  "gallery",
+  "letters",
+  "messages",
+  "settings",
+  "vows",
+]);
+const ADMIN_WRITE_TYPES = new Set([
+  "milestones",
+  "diary",
+  "gallery",
+  "letters",
+  "settings",
+  "vows",
+]);
+
+function unauthorized() {
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+}
+
+function invalidRequest(message = "Invalid request") {
+  return NextResponse.json({ error: message }, { status: 400 });
+}
+
+function parseMessage(data) {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return null;
+
+  const name = typeof data.name === "string" ? data.name.trim() : "";
+  const text = typeof data.text === "string" ? data.text.trim() : "";
+  if (!text || text.length > 500 || name.length > 30) return null;
+
+  return { name: name || "匿名", text };
+}
 
 /* ── GET /api/content?type=milestones|diary|gallery|letters|messages|settings ── */
 export async function GET(request) {
@@ -8,6 +45,7 @@ export async function GET(request) {
 
   try {
     if (type && type !== "all") {
+      if (!CONTENT_TYPES.has(type)) return invalidRequest("Unknown content type");
       let query = supabase.from(type).select("*");
       if (["milestones", "gallery", "letters"].includes(type)) {
         query = query.order("sort_order", { ascending: true });
@@ -47,10 +85,26 @@ export async function GET(request) {
 
 /* ── POST /api/content  { type, data } ── */
 export async function POST(request) {
-  const { type, data } = await request.json();
-
   try {
-    const { data: result, error } = await supabase.from(type).insert(data).select();
+    const { type, data } = await request.json();
+    let safeData;
+
+    if (type === "messages") {
+      safeData = parseMessage(data);
+      if (!safeData) return invalidRequest("留言内容格式不正确");
+    } else {
+      if (!ADMIN_WRITE_TYPES.has(type)) return invalidRequest("Unknown content type");
+      if (!isAdminRequest(request)) return unauthorized();
+      if (!data || typeof data !== "object" || Array.isArray(data)) {
+        return invalidRequest();
+      }
+      safeData = data;
+    }
+
+    const { data: result, error } = await supabase
+      .from(type)
+      .insert(safeData)
+      .select();
     if (error) throw error;
     return NextResponse.json(result?.[0] || {});
   } catch (e) {
@@ -61,9 +115,13 @@ export async function POST(request) {
 
 /* ── PUT /api/content  { type, id, data } ── */
 export async function PUT(request) {
-  const { type, id, data } = await request.json();
-
   try {
+    if (!isAdminRequest(request)) return unauthorized();
+    const { type, id, data } = await request.json();
+    if (!CONTENT_TYPES.has(type) || !id || !data || typeof data !== "object") {
+      return invalidRequest();
+    }
+
     const { data: result, error } = await supabase
       .from(type)
       .update(data)
@@ -79,9 +137,11 @@ export async function PUT(request) {
 
 /* ── DELETE /api/content  { type, id } ── */
 export async function DELETE(request) {
-  const { type, id } = await request.json();
-
   try {
+    if (!isAdminRequest(request)) return unauthorized();
+    const { type, id } = await request.json();
+    if (!CONTENT_TYPES.has(type) || !id) return invalidRequest();
+
     const { error } = await supabase.from(type).delete().eq("id", id);
     if (error) throw error;
     return NextResponse.json({ ok: true });

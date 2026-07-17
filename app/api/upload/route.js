@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { isAdminRequest } from "@/lib/admin-auth";
+
+function unauthorized() {
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+}
 
 /* POST /api/upload — accepts multipart/form-data with a "file" field */
 export async function POST(request) {
   try {
+    if (!isAdminRequest(request)) return unauthorized();
     const formData = await request.formData();
     const file = formData.get("file");
 
@@ -59,6 +65,7 @@ export async function POST(request) {
 /* DELETE /api/upload — delete a file from storage */
 export async function DELETE(request) {
   try {
+    if (!isAdminRequest(request)) return unauthorized();
     const { path } = await request.json();
     if (!path) {
       return NextResponse.json({ error: "No path provided" }, { status: 400 });

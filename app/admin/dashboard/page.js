@@ -158,7 +158,8 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await fetch("/api/auth", { method: "DELETE" });
     sessionStorage.removeItem("admin_auth");
     router.push("/admin");
   };
