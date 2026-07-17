@@ -5,6 +5,10 @@ export const metadata = {
   description: "记录属于我们的每一个瞬间，从相遇到相守，从此刻到永远",
   keywords: "couple, love story, 情侣, 爱情故事",
   authors: [{ name: "Us" }],
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export const viewport = {
