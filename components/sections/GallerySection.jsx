@@ -31,24 +31,32 @@ export default function GallerySection({ dark, galleryItems }) {
               whileHover={{ scale: 1.02 }}
             >
               <div className="relative overflow-hidden rounded-2xl" style={{ background: dark ? "#2A2025" : "#F5F0EB", border: dark ? "1px solid rgba(194,146,138,0.1)" : "1px solid rgba(194,146,138,0.15)" }}>
-                <div
-                  className="transition-transform duration-700 group-hover:scale-110"
-                  style={{
-                    backgroundColor: item.image_url ? (dark ? "#2A2025" : "#F5F0EB") : undefined,
-                    background: item.image_url ? undefined : item.gradient,
-                    height: item.h || 240,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundImage: item.image_url ? `url(${item.image_url})` : undefined,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                >
-                  {!item.image_url && (
+                {item.image_url ? (
+                  <div
+                    className="transition-transform duration-700 group-hover:scale-110 overflow-hidden"
+                    style={{ height: item.h || 240 }}
+                  >
+                    <img
+                      src={item.image_url}
+                      alt={item.caption || ""}
+                      className="w-full h-full object-cover"
+                      style={{ display: "block" }}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="transition-transform duration-700 group-hover:scale-110"
+                    style={{
+                      background: item.gradient,
+                      height: item.h || 240,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                     <Camera className="w-6 h-6" style={{ color: "rgba(255,255,255,0.25)" }} />
-                  )}
-                </div>
+                  </div>
+                )}
                 {/* hover overlay */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   style={{ background: "rgba(45,36,36,0.3)", backdropFilter: "blur(4px)" }}
@@ -110,22 +118,26 @@ export default function GallerySection({ dark, galleryItems }) {
               transition={{ type: "spring", stiffness: 250, damping: 25 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div
-                style={{
-                  background: galleryItems[lightbox].image_url ? undefined : galleryItems[lightbox].gradient,
-                  height: "60vh",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  backgroundImage: galleryItems[lightbox].image_url ? `url(${galleryItems[lightbox].image_url})` : undefined,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                {!galleryItems[lightbox].image_url && (
+              {galleryItems[lightbox].image_url ? (
+                <img
+                  src={galleryItems[lightbox].image_url}
+                  alt={galleryItems[lightbox].caption || ""}
+                  className="w-full"
+                  style={{ display: "block", maxHeight: "60vh", objectFit: "contain", background: dark ? "#1A1218" : "#000" }}
+                />
+              ) : (
+                <div
+                  style={{
+                    background: galleryItems[lightbox].gradient,
+                    height: "60vh",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
                   <Camera className="w-10 h-10" style={{ color: "rgba(255,255,255,0.2)" }} />
-                )}
-              </div>
+                </div>
+              )}
               {galleryItems[lightbox].caption && (
                 <div className="p-5 text-center" style={{ background: "rgba(0,0,0,0.5)" }}>
                   <p className="text-sm text-white/70" style={{ fontFamily: "var(--font-cn)" }}>
