@@ -16,10 +16,13 @@ export default function LettersSection({ dark, loveLetters }) {
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-60px" }}
           variants={{
-            hidden: { opacity: 0, y: 30 },
-            visible: { opacity: 1, y: 0, transition: { duration: 0.7, delay: 0.1 } },
+            hidden: { opacity: 0, y: 40, scale: 0.95, filter: "blur(8px)" },
+            visible: {
+              opacity: 1, y: 0, scale: 1, filter: "blur(0px)",
+              transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94], type: "spring", stiffness: 100 },
+            },
           }}
         >
           {/* letter selector dots */}
@@ -76,10 +79,18 @@ export default function LettersSection({ dark, loveLetters }) {
             {/* wax seal decoration */}
             <div className="absolute top-6 right-8">
               <motion.div
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                animate={{
+                  rotate: [0, 8, -8, 0],
+                  scale: [1, 1.15, 1],
+                }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                style={{
+                  filter: dark
+                    ? "drop-shadow(0 0 8px rgba(194,146,138,0.3))"
+                    : "drop-shadow(0 0 6px rgba(194,146,138,0.2))",
+                }}
               >
-                <Heart className="w-5 h-5 fill-current" style={{ color: dark ? "rgba(194,146,138,0.15)" : "rgba(194,146,138,0.12)" }} />
+                <Heart className="w-5 h-5 fill-current" style={{ color: dark ? "rgba(194,146,138,0.2)" : "rgba(194,146,138,0.15)" }} />
               </motion.div>
             </div>
 
@@ -91,10 +102,10 @@ export default function LettersSection({ dark, loveLetters }) {
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeLetter}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                initial={{ opacity: 0, y: 25, filter: "blur(6px)", scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)", scale: 1 }}
+                exit={{ opacity: 0, y: -20, filter: "blur(4px)", scale: 0.98 }}
+                transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94], type: "spring", stiffness: 120 }}
               >
                 <h4 className="text-xl md:text-2xl mb-4 sm:mb-8 relative z-10" style={{
                   fontFamily: "var(--font-cn)",

@@ -5,19 +5,19 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import { Heart, Music, Sun, Moon, Send, Sparkles } from "lucide-react";
 
 /* ══════════════════════════════════════════
-   Ambient Orbs — floating background blobs
+   Ambient Orbs — enhanced floating blobs
    ══════════════════════════════════════════ */
-export function AmbientOrbs({ dark, count = 4 }) {
+export function AmbientOrbs({ dark, count = 8 }) {
   const orbs = Array.from({ length: count }, (_, i) => ({
     id: i,
-    size: 200 + Math.random() * 400,
-    x: 10 + Math.random() * 80,
-    y: 10 + Math.random() * 80,
-    duration: 15 + Math.random() * 20,
-    delay: Math.random() * 5,
+    size: 300 + Math.random() * 400,
+    x: 5 + Math.random() * 90,
+    y: 5 + Math.random() * 90,
+    duration: 10 + Math.random() * 14,
+    delay: Math.random() * 4,
     color: dark
-      ? `rgba(${140 + i * 20}, ${80 + i * 15}, ${100 + i * 10}, 0.06)`
-      : `rgba(${220 + i * 10}, ${180 + i * 15}, ${170 + i * 10}, ${0.12 + i * 0.03})`,
+      ? `rgba(${120 + i * 18}, ${60 + i * 14}, ${90 + i * 12}, ${0.08 + i * 0.01})`
+      : `rgba(${210 + i * 6}, ${160 + i * 12}, ${150 + i * 10}, ${0.14 + i * 0.02})`,
   }));
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -30,19 +30,57 @@ export function AmbientOrbs({ dark, count = 4 }) {
             height: o.size,
             left: `${o.x}%`,
             top: `${o.y}%`,
-            background: `radial-gradient(circle, ${o.color} 0%, transparent 70%)`,
-            filter: "blur(60px)",
+            background: `radial-gradient(circle, ${o.color} 0%, transparent 65%)`,
+            filter: "blur(70px)",
           }}
           animate={{
-            x: [0, 60, -40, 30, 0],
-            y: [0, -50, 30, -20, 0],
-            scale: [1, 1.15, 0.9, 1.1, 1],
+            x: [0, 80, -60, 50, -30, 0],
+            y: [0, -70, 50, -40, 30, 0],
+            scale: [1, 1.25, 0.85, 1.2, 0.95, 1],
+            opacity: [0.6, 1, 0.7, 1, 0.8, 0.6],
           }}
           transition={{
             duration: o.duration,
             delay: o.delay,
             repeat: Infinity,
             ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   Sparkle Field — twinkling light particles
+   ══════════════════════════════════════════ */
+export function SparkleField({ dark, count = 30 }) {
+  const sparkles = Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    top: Math.random() * 100,
+    size: 2 + Math.random() * 4,
+    duration: 2 + Math.random() * 4,
+    delay: Math.random() * 6,
+  }));
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {sparkles.map((s) => (
+        <div
+          key={s.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${s.left}%`,
+            top: `${s.top}%`,
+            width: s.size,
+            height: s.size,
+            background: dark
+              ? "rgba(201,169,110,0.6)"
+              : "rgba(194,146,138,0.5)",
+            boxShadow: dark
+              ? "0 0 6px rgba(201,169,110,0.4)"
+              : "0 0 4px rgba(194,146,138,0.3)",
+            animation: `sparkle ${s.duration}s ${s.delay}s ease-in-out infinite`,
           }}
         />
       ))}
@@ -215,29 +253,45 @@ export function TiltCard({ children, className, style, dark, ...props }) {
 }
 
 /* ══════════════════════════════════════════
-   Section Divider — elegant gradient line
+   Section Divider — elegant gradient line with glow
    ══════════════════════════════════════════ */
 export function SectionDivider({ dark }) {
   return (
-    <div className="w-full flex items-center justify-center py-2" style={{ background: "transparent" }}>
+    <div className="w-full flex items-center justify-center py-2 relative" style={{ background: "transparent" }}>
       <motion.div
         className="h-px w-full max-w-md mx-auto"
         style={{
           background: dark
-            ? "linear-gradient(90deg, transparent, rgba(194,146,138,0.15), rgba(201,169,110,0.1), rgba(194,146,138,0.15), transparent)"
-            : "linear-gradient(90deg, transparent, rgba(194,146,138,0.2), rgba(201,169,110,0.15), rgba(194,146,138,0.2), transparent)",
+            ? "linear-gradient(90deg, transparent, rgba(194,146,138,0.15), rgba(201,169,110,0.12), rgba(194,146,138,0.15), transparent)"
+            : "linear-gradient(90deg, transparent, rgba(194,146,138,0.2), rgba(201,169,110,0.18), rgba(194,146,138,0.2), transparent)",
+          boxShadow: dark
+            ? "0 0 12px rgba(194,146,138,0.08)"
+            : "0 0 12px rgba(194,146,138,0.06)",
         }}
         initial={{ scaleX: 0, opacity: 0 }}
         whileInView={{ scaleX: 1, opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+        transition={{ duration: 1.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+      />
+      {/* center glow dot */}
+      <motion.div
+        className="absolute w-1.5 h-1.5 rounded-full"
+        style={{
+          background: "var(--c-gold)",
+          boxShadow: "0 0 8px rgba(201,169,110,0.4)",
+        }}
+        initial={{ scale: 0, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.6, duration: 0.5, type: "spring" }}
+        animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.2, 0.8] }}
       />
     </div>
   );
 }
 
 /* ══════════════════════════════════════════
-   Section Header — animated title block
+   Section Header — dramatic animated title block
    ══════════════════════════════════════════ */
 export function SectionHeader({ icon: Icon, enTitle, cnTitle, dark }) {
   return (
@@ -248,30 +302,57 @@ export function SectionHeader({ icon: Icon, enTitle, cnTitle, dark }) {
       viewport={{ once: true, margin: "-60px" }}
       variants={{
         hidden: { opacity: 0 },
-        visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+        visible: { opacity: 1, transition: { staggerChildren: 0.18, delayChildren: 0.12 } },
       }}
     >
-      <motion.div variants={{ hidden: { opacity: 0, scale: 0.5, rotate: -10 }, visible: { opacity: 1, scale: 1, rotate: 0 } }} transition={{ type: "spring", stiffness: 200 }}>
-        {Icon && <Icon className="w-5 h-5 mx-auto mb-5" style={{ color: "var(--c-gold)" }} />}
+      <motion.div
+        variants={{ hidden: { opacity: 0, scale: 0.3, rotate: -15, filter: "blur(10px)" }, visible: { opacity: 1, scale: 1, rotate: 0, filter: "blur(0px)" } }}
+        transition={{ type: "spring", stiffness: 180, damping: 18 }}
+      >
+        {Icon && (
+          <motion.div
+            className="w-5 h-5 mx-auto mb-5"
+            animate={{ scale: [1, 1.15, 1], opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            style={{ color: "var(--c-gold)", filter: "drop-shadow(0 0 6px rgba(201,169,110,0.3))" }}
+          >
+            <Icon className="w-5 h-5" />
+          </motion.div>
+        )}
       </motion.div>
       <motion.div className="flex items-center justify-center gap-4 mb-4" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}>
-        <div className="h-px w-10" style={{ background: "linear-gradient(to right, transparent, var(--c-rose-light))" }} />
+        <motion.div
+          className="h-px w-10"
+          style={{ background: "linear-gradient(to right, transparent, var(--c-rose-light))" }}
+          initial={{ scaleX: 0 }}
+          variants={{ visible: { scaleX: 1 } }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        />
         <motion.h3
-          variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0 } }}
+          variants={{ hidden: { opacity: 0, y: 25, filter: "blur(8px)" }, visible: { opacity: 1, y: 0, filter: "blur(0px)" } }}
+          transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-3xl md:text-5xl lg:text-6xl"
           style={{
             fontFamily: "var(--font-display)",
             fontWeight: 500,
             color: dark ? "#E8D5C4" : "var(--c-text)",
             letterSpacing: "0.02em",
+            textShadow: dark ? "0 0 40px rgba(194,146,138,0.1)" : "none",
           }}
         >
           {enTitle}
         </motion.h3>
-        <div className="h-px w-10" style={{ background: "linear-gradient(to left, transparent, var(--c-rose-light))" }} />
+        <motion.div
+          className="h-px w-10"
+          style={{ background: "linear-gradient(to left, transparent, var(--c-rose-light))" }}
+          initial={{ scaleX: 0 }}
+          variants={{ visible: { scaleX: 1 } }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        />
       </motion.div>
       <motion.p
-        variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+        variants={{ hidden: { opacity: 0, y: 15, filter: "blur(6px)" }, visible: { opacity: 1, y: 0, filter: "blur(0px)" } }}
+        transition={{ duration: 0.6, delay: 0.2 }}
         className="text-lg md:text-xl tracking-wider"
         style={{
           fontFamily: "var(--font-cn)",

@@ -11,7 +11,7 @@ import {
 } from "@/lib/data";
 
 /* ── UI primitives ── */
-import { Ripple, SectionDivider, DarkToggle, MusicToggle, MessageBoard } from "@/components/ui";
+import { Ripple, SectionDivider, DarkToggle, MusicToggle, MessageBoard, AmbientOrbs, Petals, SparkleField } from "@/components/ui";
 
 /* ── Sections ── */
 import HeroSection from "@/components/sections/HeroSection";
@@ -130,6 +130,38 @@ export default function CoupleSite() {
         color: dark ? "#E8D5C4" : "var(--c-text)",
       }}
     >
+      {/* ═══════════ GLOBAL BACKGROUND EFFECTS ═══════════ */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Flowing gradient base */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: dark
+              ? "linear-gradient(135deg, #1A1218 0%, #1E1520 25%, #1A1218 50%, #1E1520 75%, #1A1218 100%)"
+              : "linear-gradient(135deg, #FFFAF5 0%, #FFF5F0 25%, #FFFAF5 50%, #F5E6E0 75%, #FFFAF5 100%)",
+            backgroundSize: "400% 400%",
+            animation: "gradientFlow 20s ease infinite",
+          }}
+        />
+        {/* Aurora layer */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: dark
+              ? "linear-gradient(160deg, rgba(194,146,138,0.04) 0%, rgba(201,169,110,0.03) 30%, rgba(139,94,86,0.04) 60%, rgba(194,146,138,0.02) 100%)"
+              : "linear-gradient(160deg, rgba(194,146,138,0.06) 0%, rgba(201,169,110,0.05) 30%, rgba(232,196,188,0.06) 60%, rgba(194,146,138,0.04) 100%)",
+            backgroundSize: "200% 200%",
+            animation: "auroraShift 25s ease-in-out infinite",
+          }}
+        />
+        {/* Ambient orbs */}
+        <AmbientOrbs dark={dark} count={8} />
+        {/* Sparkle field */}
+        <SparkleField dark={dark} count={35} />
+        {/* Petals */}
+        <Petals dark={dark} count={18} />
+      </div>
+
       {/* click ripples */}
       <AnimatePresence>
         {ripples.map((r) => (

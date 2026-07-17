@@ -13,10 +13,10 @@ export default function DiarySection({ dark, diaryEntries }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {diaryEntries.map((entry, i) => (
             <motion.div key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 40, scale: 0.9, filter: "blur(6px)" }}
+              whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
               viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.7, delay: i * 0.08 }}
+              transition={{ duration: 0.8, delay: i * 0.1, ease: [0.25, 0.46, 0.45, 0.94], type: "spring", stiffness: 120 }}
             >
               <TiltCard dark={dark} className="h-full">
                 <div
@@ -79,7 +79,15 @@ export default function DiarySection({ dark, diaryEntries }) {
 
                   {/* bottom decorative dot */}
                   <div className="mt-6 flex justify-center">
-                    <div className="w-1 h-1 rounded-full" style={{ background: "var(--c-rose-light)" }} />
+                    <motion.div
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{
+                        background: "var(--c-rose-light)",
+                        boxShadow: "0 0 6px rgba(194,146,138,0.3)",
+                      }}
+                      animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.3, 0.8] }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                    />
                   </div>
                 </div>
               </TiltCard>

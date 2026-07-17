@@ -15,19 +15,19 @@ export default function CountdownSection({ dark, startDate, time }) {
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
           variants={{
-            hidden: { opacity: 0, y: 40 },
-            visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] } },
+            hidden: { opacity: 0, y: 50, filter: "blur(8px)" },
+            visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] } },
           }}
         >
           {/* icon */}
           <motion.div
             className="mb-6"
-            initial={{ opacity: 0, scale: 0.5 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.3, rotate: -90 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
             viewport={{ once: true }}
-            transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
+            transition={{ type: "spring", stiffness: 180, delay: 0.1 }}
           >
-            <Clock className="w-5 h-5 mx-auto" style={{ color: "var(--c-gold)" }} />
+            <Clock className="w-5 h-5 mx-auto" style={{ color: "var(--c-gold)", filter: "drop-shadow(0 0 6px rgba(201,169,110,0.3))" }} />
           </motion.div>
 
           {/* date label */}
@@ -74,7 +74,7 @@ export default function CountdownSection({ dark, startDate, time }) {
             { value: time.minutes, label: "Minutes" },
             { value: time.seconds, label: "Seconds" },
           ].map((item, i) => (
-            <motion.div key={i} variants={{ hidden: { opacity: 0, y: 30, scale: 0.9 }, visible: { opacity: 1, y: 0, scale: 1 } }}>
+            <motion.div key={i} variants={{ hidden: { opacity: 0, y: 40, scale: 0.85, filter: "blur(4px)" }, visible: { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" } }} transition={{ type: "spring", stiffness: 120, damping: 18 }}>
               <FlipCard value={item.value} label={item.label} dark={dark} />
             </motion.div>
           ))}

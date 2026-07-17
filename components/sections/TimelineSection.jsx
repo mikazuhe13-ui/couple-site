@@ -34,10 +34,10 @@ export default function TimelineSection({ dark, milestones }) {
               <motion.div
                 key={i}
                 className={`relative mb-14 md:mb-20 flex items-center ${isLeft ? "md:flex-row" : "md:flex-row-reverse"}`}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 50, filter: "blur(6px)" }}
+                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.8, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+                transition={{ duration: 0.9, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94], type: "spring", stiffness: 100 }}
               >
                 {/* Desktop card */}
                 <div className={`hidden md:block w-5/12 ${isLeft ? "pr-12 text-right" : "pl-12 text-left"}`}>
@@ -101,9 +101,10 @@ export default function TimelineSection({ dark, milestones }) {
                       ? "0 0 20px rgba(194,146,138,0.1)"
                       : "0 0 20px rgba(194,146,138,0.08)",
                   }}
-                  whileInView={{ scale: [0, 1.2, 1] }}
+                  whileInView={{ scale: [0, 1.3, 1] }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 200 }}
+                  transition={{ duration: 0.7, delay: 0.3, type: "spring", stiffness: 200 }}
+                  animate={{ boxShadow: dark ? ["0 0 20px rgba(194,146,138,0.1)", "0 0 30px rgba(194,146,138,0.2)", "0 0 20px rgba(194,146,138,0.1)"] : ["0 0 20px rgba(194,146,138,0.08)", "0 0 30px rgba(194,146,138,0.15)", "0 0 20px rgba(194,146,138,0.08)"] }}
                 >
                   <Icon className="w-4 h-4" style={{ color: "var(--c-rose)" }} />
                 </motion.div>

@@ -113,6 +113,33 @@ body {
   100% { transform: translateY(110vh) translateX(var(--sway, 80px)) rotate(var(--spin, 720deg)) scale(0.6); opacity: 0; }
 }
 
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 0%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 100%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); filter: blur(60px); }
+  33% { opacity: 0.6; transform: scale(1.15); filter: blur(80px); }
+  66% { opacity: 0.4; transform: scale(0.95); filter: blur(50px); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+@keyframes auroraShift {
+  0% { transform: translateX(-30%) translateY(-10%) rotate(0deg); }
+  25% { transform: translateX(10%) translateY(5%) rotate(3deg); }
+  50% { transform: translateX(30%) translateY(-5%) rotate(-2deg); }
+  75% { transform: translateX(-10%) translateY(10%) rotate(1deg); }
+  100% { transform: translateX(-30%) translateY(-10%) rotate(0deg); }
+}
+
 /* ── Utility classes ── */
 .text-shimmer {
   background: linear-gradient(
