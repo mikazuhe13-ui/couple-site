@@ -1,5 +1,10 @@
 import "./globals.css";
 import { Noto_Serif_SC, Playfair_Display } from "next/font/google";
+import {
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/site-metadata.mjs";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -15,10 +20,47 @@ const notoSerifSC = Noto_Serif_SC({
 });
 
 export const metadata = {
-  title: "Our Love Story | 我们的爱情故事",
-  description: "记录属于我们的每一个瞬间，从相遇到相守，从此刻到永远",
-  keywords: "couple, love story, 情侣, 爱情故事",
-  authors: [{ name: "Us" }],
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME}｜我们的爱情故事`,
+    template: `%s｜${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "杜明洋",
+    "陈柯嘉",
+    "情侣纪念",
+    "爱情故事",
+    "浪漫相册",
+    "纪念日",
+  ],
+  authors: [{ name: "杜明洋" }, { name: "陈柯嘉" }],
+  creator: SITE_NAME,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "zh_CN",
+    url: "/",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME}｜我们的爱情故事`,
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME}的爱情纪念网站`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME}｜我们的爱情故事`,
+    description: SITE_DESCRIPTION,
+    images: ["/opengraph-image.png"],
+  },
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
