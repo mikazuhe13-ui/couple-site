@@ -95,22 +95,23 @@ body {
     grid-template-rows: minmax(2rem, 0.35fr) auto auto auto minmax(2rem, 0.3fr);
     row-gap: clamp(0.6rem, 2vh, 1rem);
     padding-top: env(safe-area-inset-top, 0px);
-    /* Strong backdrop on mobile for guaranteed text readability */
+    /* Light backdrop — let video show through while keeping text readable */
     background: radial-gradient(
-      ellipse 90% 70% at center,
-      rgba(255, 251, 245, 0.82) 0%,
-      rgba(255, 245, 235, 0.6) 45%,
-      rgba(255, 248, 240, 0.2) 75%,
+      ellipse 80% 60% at center,
+      rgba(255, 251, 245, 0.35) 0%,
+      rgba(255, 245, 235, 0.15) 50%,
       transparent 100%
     );
   }
 
   .hero-title {
     letter-spacing: 0.06em;
+    text-shadow: 0 1px 20px rgba(255, 251, 245, 0.6), 0 2px 40px rgba(212, 137, 140, 0.3);
   }
 
   .hero-tagline {
     font-size: clamp(0.7rem, 3.2vw, 0.9rem);
+    text-shadow: 0 1px 12px rgba(255, 251, 245, 0.5);
   }
 }
 
