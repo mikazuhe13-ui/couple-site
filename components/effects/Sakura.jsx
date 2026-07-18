@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 
 /* ── Petal factory ── */
 function createPetal(W, H, startAbove = false) {
@@ -44,15 +45,18 @@ function drawPetal(ctx, p) {
 export default function Sakura() {
   const canvasRef = useRef(null);
   const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    requestAnimationFrame(() => setVisible(true));
-  }, []);
+  const shouldReduceMotion = useReducedMotion();
 
   /* Canvas animation loop */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const saveData = navigator.connection?.saveData;
+    if (shouldReduceMotion || saveData) {
+      setVisible(false);
+      return;
+    }
+
     const ctx = canvas.getContext("2d");
     let raf;
     let petals = [];
@@ -94,15 +98,37 @@ export default function Sakura() {
       raf = requestAnimationFrame(animate);
     };
 
+    const start = () => {
+      if (!raf && document.visibilityState === "visible") {
+        raf = requestAnimationFrame(animate);
+      }
+    };
+
+    const stop = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = undefined;
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        stop();
+      } else {
+        start();
+      }
+    };
+
     init();
-    raf = requestAnimationFrame(animate);
+    setVisible(true);
+    start();
     window.addEventListener("resize", resize);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      cancelAnimationFrame(raf);
+      stop();
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [shouldReduceMotion]);
 
   return (
     <canvas
