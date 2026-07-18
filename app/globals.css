@@ -52,6 +52,11 @@ body {
   margin-inline: auto;
 }
 
+/* Hero section fallback background */
+#hero {
+  background-color: var(--c-bg-warm);
+}
+
 .hero-title {
   font-family: var(--font-noto-serif-sc), var(--font-playfair), 'Songti SC', serif;
   font-size: clamp(1.65rem, 6.5vw, 5.5rem);
@@ -90,12 +95,13 @@ body {
     grid-template-rows: minmax(2rem, 0.35fr) auto auto auto minmax(2rem, 0.3fr);
     row-gap: clamp(0.6rem, 2vh, 1rem);
     padding-top: env(safe-area-inset-top, 0px);
-    /* Semi-transparent backdrop on mobile for text readability */
+    /* Strong backdrop on mobile for guaranteed text readability */
     background: radial-gradient(
-      ellipse at center,
-      rgba(255, 251, 245, 0.55) 0%,
-      rgba(255, 245, 235, 0.35) 50%,
-      transparent 80%
+      ellipse 90% 70% at center,
+      rgba(255, 251, 245, 0.82) 0%,
+      rgba(255, 245, 235, 0.6) 45%,
+      rgba(255, 248, 240, 0.2) 75%,
+      transparent 100%
     );
   }
 

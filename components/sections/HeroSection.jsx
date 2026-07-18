@@ -134,7 +134,7 @@ export default function HeroSection({ scrollTo }) {
         heroInView ? "hero-is-active" : ""
       }`}
       style={{
-        minHeight: heroHeight ? `${heroHeight}px` : "100vh",
+        height: heroHeight ? `${heroHeight}px` : "100vh",
       }}
     >
       <motion.div
@@ -165,9 +165,10 @@ export default function HeroSection({ scrollTo }) {
         className={`hero-content-grid relative z-10 px-5 text-center sm:px-8 ${
           parallaxActive ? "will-change-transform" : ""
         }`}
-        style={
-          parallaxActive ? { y: contentY, opacity: contentOpacity } : undefined
-        }
+        style={{
+          height: heroHeight ? `${heroHeight}px` : "100%",
+          ...(parallaxActive ? { y: contentY, opacity: contentOpacity } : {}),
+        }}
       >
         <motion.div className="self-end" {...reveal(0.15)}>
           <div className="mx-auto h-px w-[clamp(3rem,10vw,8.75rem)] bg-[linear-gradient(90deg,transparent,var(--c-gold),transparent)] opacity-60" />
