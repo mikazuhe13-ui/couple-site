@@ -114,10 +114,6 @@ export default function CoupleSite({ initialContent }) {
       {/* ═══════════ SECTIONS ═══════════ */}
       <HeroSection scrollTo={scrollTo} />
 
-      <CountdownSection startDate={startDate} />
-
-      <SectionDivider />
-
       {/* ═══════════ SAKURA BG SECTIONS ═══════════ */}
       <div
         style={{
@@ -128,6 +124,10 @@ export default function CoupleSite({ initialContent }) {
           backgroundRepeat: "no-repeat",
         }}
       >
+        <CountdownSection startDate={startDate} />
+
+        <SectionDivider />
+
         <DiarySection diaryEntries={diaryEntries} />
 
         <SectionDivider />
