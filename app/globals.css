@@ -87,7 +87,7 @@ body {
 
 @media (max-width: 640px) {
   .hero-content-grid {
-    grid-template-rows: minmax(3rem, 0.8fr) auto auto auto minmax(2.5rem, 0.7fr);
+    grid-template-rows: minmax(2rem, 0.35fr) auto auto auto minmax(2rem, 0.3fr);
     row-gap: clamp(0.6rem, 2svh, 1rem);
     padding-top: env(safe-area-inset-top, 0px);
   }
