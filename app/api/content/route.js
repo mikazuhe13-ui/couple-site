@@ -19,6 +19,9 @@ const ADMIN_WRITE_TYPES = new Set([
   "settings",
   "vows",
 ]);
+const MESSAGE_WINDOW_MS = 60_000;
+const MESSAGE_LIMIT = 5;
+const messageRequests = new Map();
 
 function unauthorized() {
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -38,6 +41,33 @@ function parseMessage(data) {
   return { name: name || "匿名", text };
 }
 
+function isMessageRateLimited(request) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  const clientId = forwardedFor?.split(",")[0]?.trim()
+    || request.headers.get("x-real-ip")
+    || "unknown";
+  const now = Date.now();
+  if (messageRequests.size > 500) {
+    for (const [key, timestamps] of messageRequests) {
+      if (!timestamps.some((timestamp) => now - timestamp < MESSAGE_WINDOW_MS)) {
+        messageRequests.delete(key);
+      }
+    }
+  }
+  const recent = (messageRequests.get(clientId) || []).filter(
+    (timestamp) => now - timestamp < MESSAGE_WINDOW_MS
+  );
+
+  if (recent.length >= MESSAGE_LIMIT) {
+    messageRequests.set(clientId, recent);
+    return true;
+  }
+
+  recent.push(now);
+  messageRequests.set(clientId, recent);
+  return false;
+}
+
 /* ── GET /api/content?type=milestones|diary|gallery|letters|messages|settings ── */
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -52,7 +82,7 @@ export async function GET(request) {
       } else if (type === "diary") {
         query = query.order("date", { ascending: false });
       } else if (type === "messages") {
-        query = query.order("created_at", { ascending: false });
+        query = query.order("created_at", { ascending: false }).limit(50);
       }
       const { data, error } = await query;
       if (error) throw error;
@@ -65,7 +95,11 @@ export async function GET(request) {
       supabase.from("diary").select("*").order("date", { ascending: false }),
       supabase.from("gallery").select("*").order("sort_order", { ascending: true }),
       supabase.from("letters").select("*").order("sort_order", { ascending: true }),
-      supabase.from("messages").select("*").order("created_at", { ascending: false }),
+      supabase
+        .from("messages")
+        .select("id,name,text,created_at")
+        .order("created_at", { ascending: false })
+        .limit(50),
       supabase.from("settings").select("*"),
     ]);
 
@@ -92,6 +126,12 @@ export async function POST(request) {
     if (type === "messages") {
       safeData = parseMessage(data);
       if (!safeData) return invalidRequest("留言内容格式不正确");
+      if (isMessageRateLimited(request)) {
+        return NextResponse.json(
+          { error: "留言太频繁，请稍后再试" },
+          { status: 429, headers: { "Retry-After": "60" } }
+        );
+      }
     } else {
       if (!ADMIN_WRITE_TYPES.has(type)) return invalidRequest("Unknown content type");
       if (!isAdminRequest(request)) return unauthorized();

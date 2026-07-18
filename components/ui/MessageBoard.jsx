@@ -69,6 +69,7 @@ export default function MessageBoard({ messages, onAddMessage }) {
               placeholder="你的名字"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              maxLength={30}
               aria-describedby={statusId}
               style={{ ...inputStyle, padding: "10px 14px", width: "100%" }}
             />
@@ -80,6 +81,7 @@ export default function MessageBoard({ messages, onAddMessage }) {
               placeholder="写下你想说的话..."
               value={text}
               onChange={(e) => setText(e.target.value)}
+              maxLength={500}
               aria-describedby={statusId}
               rows={3}
               style={{
@@ -162,6 +164,7 @@ export default function MessageBoard({ messages, onAddMessage }) {
             placeholder="你的名字"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            maxLength={30}
             aria-describedby={statusId}
             style={{ ...inputStyle, padding: "12px 16px", maxWidth: 130 }}
           />
@@ -174,6 +177,7 @@ export default function MessageBoard({ messages, onAddMessage }) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && add()}
+            maxLength={500}
             aria-describedby={statusId}
             style={{ ...inputStyle, padding: "12px 16px", flex: 1 }}
           />
