@@ -12,8 +12,6 @@ import styles from "./Gallery.module.css";
 const BLUR_DATA_URL =
   "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRkZGM0U4Ii8+PC9zdmc+";
 
-const SAKURA_BG = "/sakura-bg.png";
-
 export default function GalleryFrame({ item, index, onOpen }) {
   const reducedMotion = useReducedMotion();
   const glareX = useMotionValue(50);
@@ -25,7 +23,6 @@ export default function GalleryFrame({ item, index, onOpen }) {
   const width = item.width || 900;
   const height = item.height || 1200;
   const aspectRatio = `${width} / ${height}`;
-  const hasSakuraBg = index >= 2;
 
   const handlePointerMove = (event) => {
     if (event.pointerType === "touch" || reducedMotion) return;
@@ -55,22 +52,8 @@ export default function GalleryFrame({ item, index, onOpen }) {
     >
       <span className={styles.frameOuter}>
         <span className={styles.frameBevel}>
-          <span
-            className={styles.frameMat}
-            style={hasSakuraBg ? { position: "relative", overflow: "hidden" } : undefined}
-          >
-            {hasSakuraBg && (
-              <Image
-                src={SAKURA_BG}
-                alt=""
-                fill
-                sizes="(max-width: 767px) 78vw, (max-width: 1199px) 30vw, 24vw"
-                className="absolute inset-0"
-                style={{ objectFit: "cover", zIndex: 0 }}
-                aria-hidden="true"
-              />
-            )}
-            <span className={styles.photo} style={{ position: "relative", zIndex: 1, aspectRatio }}>
+          <span className={styles.frameMat}>
+            <span className={styles.photo} style={{ aspectRatio }}>
               {item.image_url ? (
                 <Image
                   className={styles.photoImage}

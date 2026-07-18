@@ -118,27 +118,37 @@ export default function CoupleSite({ initialContent }) {
 
       <SectionDivider />
 
-      <DiarySection diaryEntries={diaryEntries} />
-
-      <SectionDivider />
-
-      <GallerySection galleryItems={galleryItems} />
-
-      <SectionDivider />
-
-      <VowsSection vows={vowsItems} />
-
-      <SectionDivider />
-
-      <LettersSection loveLetters={loveLetters} />
-
-      <SectionDivider />
-
-      {/* ═══════════ MESSAGE BOARD ═══════════ */}
-      <section
-        id="messages"
-        className="relative py-20 md:py-40 px-5 md:px-6"
+      {/* ═══════════ SAKURA BG SECTIONS ═══════════ */}
+      <div
+        style={{
+          backgroundImage: "url(/sakura-bg.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+          backgroundRepeat: "no-repeat",
+        }}
       >
+        <DiarySection diaryEntries={diaryEntries} />
+
+        <SectionDivider />
+
+        <GallerySection galleryItems={galleryItems} />
+
+        <SectionDivider />
+
+        <VowsSection vows={vowsItems} />
+
+        <SectionDivider />
+
+        <LettersSection loveLetters={loveLetters} />
+
+        <SectionDivider />
+
+        {/* ═══════════ MESSAGE BOARD ═══════════ */}
+        <section
+          id="messages"
+          className="relative py-20 md:py-40 px-5 md:px-6"
+        >
         <div className="max-w-3xl mx-auto relative z-10">
           <motion.div
             initial="hidden"
@@ -176,6 +186,7 @@ export default function CoupleSite({ initialContent }) {
           <MessageBoard messages={messages} onAddMessage={handleAddMessage} />
         </div>
       </section>
+      </div>
 
       {/* ═══════════ FOOTER ═══════════ */}
       <footer className="relative py-16 md:py-20 px-6 text-center">
