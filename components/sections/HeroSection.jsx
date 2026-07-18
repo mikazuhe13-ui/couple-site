@@ -27,6 +27,22 @@ export default function HeroSection({ scrollTo }) {
   const contentOpacity = useTransform(scrollYProgress, [0, 0.78], [1, 0.88]);
 
   const [heroHeight, setHeroHeight] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile / touch devices — used to skip video rendering entirely.
+  // Chinese Android browsers (WeChat X5, QQ, UC) hijack <video> into a
+  // native fullscreen player, destroying the page layout. On these devices
+  // we show the static poster image instead.
+  useEffect(() => {
+    const check = () => {
+      const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      const small = window.innerWidth <= 768;
+      setIsMobile(touch && small);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   // Dynamically set hero height via JS — far more reliable than CSS
   // viewport units (vh/svh/dvh) on mobile browsers, especially Chinese
@@ -66,7 +82,7 @@ export default function HeroSection({ scrollTo }) {
   useEffect(() => {
     const section = sectionRef.current;
     const video = videoRef.current;
-    if (!section || !video) return;
+    if (!section || !video) return; // On mobile, video element doesn't exist — skip
 
     const reducedMotionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -112,7 +128,7 @@ export default function HeroSection({ scrollTo }) {
       connection?.removeEventListener?.("change", syncPlayback);
       video.pause();
     };
-  }, []);
+  }, [isMobile]);
 
   const motionEnabled = !reduceMotion;
   const parallaxActive = canParallax && motionEnabled && heroInView;
@@ -144,24 +160,32 @@ export default function HeroSection({ scrollTo }) {
         style={parallaxActive ? { y: mediaY } : undefined}
         aria-hidden="true"
       >
-        <video
-          ref={videoRef}
-          className="absolute inset-0 h-full w-full object-cover"
-          poster="/hero-poster.webp"
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-hidden="true"
-          /* ── Prevent X5 kernel (WeChat/QQ/UC on Android) from hijacking
-             video into native fullscreen player ── */
-          webkit-playsinline=""
-          x5-video-player-type="h5"
-          x5-video-player-fullscreen="false"
-          x5-video-orientation="portrait"
-        >
-          <source src="/hero-bg.mp4" type="video/mp4" />
-        </video>
+        {isMobile ? (
+          /* Mobile: static poster image — no <video> element for X5 to hijack */
+          <img
+            src="/hero-poster.webp"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+            aria-hidden="true"
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            className="absolute inset-0 h-full w-full object-cover"
+            poster="/hero-poster.webp"
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-hidden="true"
+            webkit-playsinline=""
+            x5-video-player-type="h5"
+            x5-video-player-fullscreen="false"
+            x5-video-orientation="portrait"
+          >
+            <source src="/hero-bg.mp4" type="video/mp4" />
+          </video>
+        )}
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,251,245,0.18)_0%,rgba(255,245,235,0.04)_38%,rgba(255,248,240,0.08)_72%,rgba(255,251,245,0.28)_100%)]" />
       </motion.div>
 
