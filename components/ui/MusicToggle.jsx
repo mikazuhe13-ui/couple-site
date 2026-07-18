@@ -10,21 +10,68 @@ export default function MusicToggle() {
   const audioRef = useRef(null);
   const isMobile = useIsMobile();
   const shouldReduceMotion = useReducedMotion();
+  const autoplayAttempted = useRef(false);
 
+  // Create audio element once
   useEffect(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio("/bgm.mp3");
       audioRef.current.loop = true;
       audioRef.current.volume = 0.5;
     }
-    const audio = audioRef.current;
+  }, []);
 
+  // Sync playing state → play / pause
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
     if (playing) {
       audio.play().catch(() => setPlaying(false));
     } else {
       audio.pause();
     }
   }, [playing]);
+
+  // Autoplay on mount; if blocked, start on first user interaction
+  useEffect(() => {
+    if (autoplayAttempted.current) return;
+    autoplayAttempted.current = true;
+
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const tryPlay = () => {
+      audio.play().then(() => {
+        setPlaying(true);
+        cleanup();
+      }).catch(() => {
+        // Autoplay blocked — wait for first user interaction
+      });
+    };
+
+    const onInteract = () => {
+      audio.play().then(() => {
+        setPlaying(true);
+      }).catch(() => {});
+      cleanup();
+    };
+
+    const cleanup = () => {
+      document.removeEventListener("click", onInteract);
+      document.removeEventListener("touchstart", onInteract);
+      document.removeEventListener("keydown", onInteract);
+    };
+
+    // Try autoplay immediately
+    tryPlay();
+
+    // If autoplay was blocked, listen for first interaction
+    document.addEventListener("click", onInteract, { once: true });
+    document.addEventListener("touchstart", onInteract, { once: true });
+    document.addEventListener("keydown", onInteract, { once: true });
+
+    return cleanup;
+  }, []);
 
   useEffect(() => {
     return () => {
