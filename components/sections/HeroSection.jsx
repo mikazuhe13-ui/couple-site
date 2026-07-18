@@ -111,7 +111,7 @@ export default function HeroSection({ scrollTo }) {
     <section
       ref={sectionRef}
       id="hero"
-      className={`relative min-h-[100svh] overflow-hidden grain-overlay ${
+      className={`relative min-h-screen min-h-[100dvh] overflow-hidden grain-overlay ${
         heroInView ? "hero-is-active" : ""
       }`}
     >
