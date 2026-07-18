@@ -153,6 +153,12 @@ export default function HeroSection({ scrollTo }) {
           playsInline
           preload="metadata"
           aria-hidden="true"
+          /* ── Prevent X5 kernel (WeChat/QQ/UC on Android) from hijacking
+             video into native fullscreen player ── */
+          webkit-playsinline=""
+          x5-video-player-type="h5"
+          x5-video-player-fullscreen="false"
+          x5-video-orientation="portrait"
         >
           <source src="/hero-bg.mp4" type="video/mp4" />
         </video>
