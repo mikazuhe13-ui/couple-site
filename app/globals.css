@@ -45,10 +45,9 @@ body {
 /* ── Hero rhythm ── */
 .hero-content-grid {
   display: grid;
-  grid-template-rows: minmax(clamp(3.75rem, 12dvh, 8rem), 1fr) auto auto auto minmax(clamp(3rem, 10dvh, 6rem), 1fr);
-  row-gap: clamp(0.85rem, 2.4dvh, 1.75rem);
-  min-height: 100vh;
-  min-height: 100dvh;
+  grid-template-rows: minmax(clamp(3.75rem, 12vh, 8rem), 1fr) auto auto auto minmax(clamp(3rem, 10vh, 6rem), 1fr);
+  row-gap: clamp(0.85rem, 2.4vh, 1.75rem);
+  min-height: 100%;
   width: min(100%, 76rem);
   margin-inline: auto;
 }
@@ -89,8 +88,15 @@ body {
 @media (max-width: 640px) {
   .hero-content-grid {
     grid-template-rows: minmax(2rem, 0.35fr) auto auto auto minmax(2rem, 0.3fr);
-    row-gap: clamp(0.6rem, 2dvh, 1rem);
+    row-gap: clamp(0.6rem, 2vh, 1rem);
     padding-top: env(safe-area-inset-top, 0px);
+    /* Semi-transparent backdrop on mobile for text readability */
+    background: radial-gradient(
+      ellipse at center,
+      rgba(255, 251, 245, 0.55) 0%,
+      rgba(255, 245, 235, 0.35) 50%,
+      transparent 80%
+    );
   }
 
   .hero-title {

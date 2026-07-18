@@ -26,6 +26,25 @@ export default function HeroSection({ scrollTo }) {
   const contentY = useTransform(scrollYProgress, [0, 1], [0, -22]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.78], [1, 0.88]);
 
+  const [heroHeight, setHeroHeight] = useState(null);
+
+  // Dynamically set hero height via JS — far more reliable than CSS
+  // viewport units (vh/svh/dvh) on mobile browsers, especially Chinese
+  // Android browsers and WeChat's X5 kernel.
+  useEffect(() => {
+    const update = () => setHeroHeight(window.innerHeight);
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    // Some mobile browsers change viewport after a short delay
+    const t = setTimeout(update, 300);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+      clearTimeout(t);
+    };
+  }, []);
+
   useEffect(() => {
     const query = window.matchMedia(
       "(min-width: 769px) and (hover: hover) and (pointer: fine)"
@@ -111,9 +130,12 @@ export default function HeroSection({ scrollTo }) {
     <section
       ref={sectionRef}
       id="hero"
-      className={`relative min-h-screen min-h-[100dvh] overflow-hidden grain-overlay ${
+      className={`relative overflow-hidden grain-overlay ${
         heroInView ? "hero-is-active" : ""
       }`}
+      style={{
+        minHeight: heroHeight ? `${heroHeight}px` : "100vh",
+      }}
     >
       <motion.div
         className={`absolute -inset-y-12 inset-x-0 overflow-hidden ${
