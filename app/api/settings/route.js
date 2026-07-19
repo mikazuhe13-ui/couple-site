@@ -1,7 +1,12 @@
 import { supabaseAdmin } from "@/lib/supabase";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 export async function PATCH(request) {
   try {
+    if (!isAdminRequest(request)) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { key, value } = await request.json();
 
     if (!key || !value) {
